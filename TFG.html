@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,7 +26,6 @@
 	ctx = canvas.getContext('2d'),
 
 
-
 	///// Variables globales de la geometria
 	ReflectEdgeBisector,
 	ReflectPgonEdge,
@@ -38,20 +38,15 @@
 	RotateCenter,
 	RotateVertex;
 
-
 	var p = 6, q = 4, 		// parámetros p y q
 	nLayers = 2;			// Capas a dibujar
-
 
 	var										//// Create ReflectEdgeBisector
 	RB1 = [1,0,0],
 	RB2 = [0,-1,0],
 	RB3 = [0,0,1];
 
-
-	ReflectEdgeBisector = [RB1,RB2,RB3];	//// End creation
-
-
+	ReflectEdgeBisector = [RB1, RB2, RB3];	//// End creation
 
 	cosh_b = Math.cos(Math.PI / q) / Math.sin(Math.PI / p);		//// Create ReflectPgonEdge
 
@@ -63,11 +58,6 @@
 	RPE3 = [-sinh_2b, 0, cosh_2b];
 
 	ReflectPgonEdge = [RPE1, RPE2, RPE3];						//// End creation
-
-	//console.log("cos2 = " + cosh_2b);
-	//console.log("sin = " + sinh_2b);
-	//console.log("cosh_b: " + cosh_b);
-
 
 	var																							/// Create ReflectHypotenuse
 	RH1 = [Math.cos(2 / p), Math.sin(2 / p), 0],
@@ -145,84 +135,82 @@
 	//**********************************************************************
 
 	// Esta función no se utiliza ahora mismo, las definiciones están hechas de forma global.
-		
-	//************************************************************************
 
-			function inicialice( p, q ){
-			/*canv_doc = elementoHTML("canvas1");
+	/*function inicialice( p, q ){
+	canv_doc = elementoHTML("canvas1");
 
-			ctx_doc = canv_doc.getContext("2d");
+	ctx_doc = canv_doc.getContext("2d");
 
-			if (!ctx_doc){
-				alert("error: la llamada a canv_doc.getContext(\"2d\") no está soportada o no ha funcionado.");
-				exit();
-				}
+	if (!ctx_doc){
+		alert("error: la llamada a canv_doc.getContext(\"2d\") no está soportada o no ha funcionado.");
+		exit();
+		}
 
-			tcx = canv_doc.width,		/// Tamaño del canvas en la X
-			tcy = canv_doc.height;		/// Tamaño del canvas en la Y
+	tcx = canv_doc.width,		/// Tamaño del canvas en la X
+	tcy = canv_doc.height;		/// Tamaño del canvas en la Y
 
 
-			canv_aux = document.createElement('canvas');
+	canv_aux = document.createElement('canvas');
 
-			if (!canv_aux){
-				alert("error: la llamada a document.createElement('canvas') no está soportada o no ha funcionado.");
-				exit();
-				}
+	if (!canv_aux){
+		alert("error: la llamada a document.createElement('canvas') no está soportada o no ha funcionado.");
+		exit();
+		}
 
-			canv_aux.width = tcx;
-			canv_aux.height = tcy;
+	canv_aux.width = tcx;
+	canv_aux.height = tcy;
 
-			ctx_aux = canv_aux.getContext('2d');
+	ctx_aux = canv_aux.getContext('2d');
 
-			if (!canv_aux){
-				alert("error: la llamada a canv_aux.getContext('2d') no está soportada o no ha funcionado.");
-				exit();
-				}
+	if (!canv_aux){
+		alert("error: la llamada a canv_aux.getContext('2d') no está soportada o no ha funcionado.");
+		exit();
+		}
 
-			// Se dibuja en el canvas auxiliar.
-			ctx = ctx_aux;*/
+	// Se dibuja en el canvas auxiliar.
+	ctx = ctx_aux;
 
 
 
-			var										//// Create ReflectEdgeBisector
-			RB1 = [1,0,0],
-			RB2 = [0,-1,0],
-			RB3 = [0,0,1];
+	var										//// Create ReflectEdgeBisector
+	RB1 = [1,0,0],
+	RB2 = [0,-1,0],
+	RB3 = [0,0,1];
 
 
-			ReflectEdgeBisector = [RB1,RB2,RB3];	//// End creation
+	ReflectEdgeBisector = [RB1,RB2,RB3];	//// End creation
 
 
 
-			cosh_b = Math.cos(Math.PI / q) / Math.sin(Math.PI / p);		//// Create ReflectPgonEdge
+	cosh_b = Math.cos(Math.PI / q) / Math.sin(Math.PI / p);		//// Create ReflectPgonEdge
 
-			var
-			cosh_2b = 2 * cosh_b * cosh_b - 1,
-			sinh_2b = Math.sqrt(cosh_b * cosh_b - 1),
-			RPE1 = [-cosh_2b, 0, sinh_2b],
-			RPE2 = [0, 1, 0],
-			RPE3 = [-sinh_2b, 0, cosh_2b];
+	var
+	cosh_2b = 2 * cosh_b * cosh_b - 1,
+	sinh_2b = Math.sqrt(cosh_b * cosh_b - 1),
+	RPE1 = [-cosh_2b, 0, sinh_2b],
+	RPE2 = [0, 1, 0],
+	RPE3 = [-sinh_2b, 0, cosh_2b];
 
-			ReflectPgonEdge = [RPE1, RPE2, RPE3];						//// End creation
+	ReflectPgonEdge = [RPE1, RPE2, RPE3];						//// End creation
 
-			//console.log("cos2 = " + cosh_2b);
-			//console.log("sin = " + sinh_2b);
-			//console.log("cosh_b: " + cosh_b);
-
-
-			var																							/// Create ReflectHypotenuse
-			RH1 = [Math.cos(2 / p), Math.sin(2 / p), 0],
-			RH2 = [Math.sin(2 / p), -Math.cos(2 / p), 0],
-			RH3 = [0, 0, 1];
-
-			ReflectHypotenuse = [RH1, RH2, RH3];						/// End creation
+	//console.log("cos2 = " + cosh_2b);
+	//console.log("sin = " + sinh_2b);
+	//console.log("cosh_b: " + cosh_b);
 
 
-			RotateP = matrixproduct(ReflectEdgeBisector, ReflectHypotenuse);
-			RotateQ = matrixproduct(ReflectHypotenuse, ReflectPgonEdge);
-			RotateEdge = matrixproduct(ReflectPgonEdge, ReflectEdgeBisector);
+	var																							/// Create ReflectHypotenuse
+	RH1 = [Math.cos(2 / p), Math.sin(2 / p), 0],
+	RH2 = [Math.sin(2 / p), -Math.cos(2 / p), 0],
+	RH3 = [0, 0, 1];
 
-			}
+	ReflectHypotenuse = [RH1, RH2, RH3];						/// End creation
+
+
+	RotateP = matrixproduct(ReflectEdgeBisector, ReflectHypotenuse);
+	RotateQ = matrixproduct(ReflectHypotenuse, ReflectPgonEdge);
+	RotateEdge = matrixproduct(ReflectPgonEdge, ReflectEdgeBisector);
+
+}*/
 
 	//*******************************************************************************************
 
@@ -233,18 +221,17 @@
 
 		for (i = 0; i < Action.length /*nPgonActions*/; i++){
 			console.log("iteracion: " + i);
-			if (Action[i] != "Black"){				/// Ahora mismo solo hay negro											// Ahora mismo el único color que hay es Negro
-				SumSquare = X[i] * X[i] + Y[i] * Y[i];
+			if (Action[i] != "Black"){													// Ahora mismo el único color que hay es Negro
+			/*	SumSquare = X[i] * X[i] + Y[i] * Y[i];
 
 				var Z = [[2 * X[i] / (1 - SumSquare)],
-								[2 * Y[i] / (1 - SumSquare)],
-								[(1 + SumSquare) / (1 - SumSquare)]];
+					[2 * Y[i] / (1 - SumSquare)],
+					[(1 + SumSquare) / (1 - SumSquare)]];
 
-				//console.log("Antes: " + Z);
+				Z = matrixproduct(transformation, Z);				/// Desde dejado del if (Action[i] != "Black") está en el artículo de 1981*/
 
-				Z = matrixproduct(transformation, Z);
-
-				//console.log("Despues: " + Z);
+				let coordinates = [[X[i]], [Y[i]], [0]];							///
+				let Z = matrixproduct(transformation, coordinates);		/// Estas dos líneas están en el artículo de 1986
 
 				Tx = Z[0][0] / (1 + Z[2][0]);
 				Ty = Z[1][0] / (1 + Z[2][0]);
@@ -265,21 +252,25 @@
 				case "Black":
 					ctx.strokeStyle = "Black";		//Pinta los bordes del polígono
 					ctx.stroke();
+					ctx.beginPath();
 					break;
 
 				case "Blue":
 					ctx.strokeStyle = "Blue";
 					ctx.stroke();
+					ctx.beginPath();
 					break;
 
 				case "Red":
 					ctx.strokeStyle = "Red";
 					ctx.stroke();
+					ctx.beginPath();
 					break;
 
 				case "Yellow":
 					ctx.strokeStyle = "Yellow";
 					ctx.stroke();
+					ctx.beginPath();
 					break;
 			}
 		}
@@ -288,10 +279,10 @@
 	//*******************************************************************************************
 
 	function ReplicatePatern(InitialTransformation, Layerdiff, Adyacency){
-		var
+		let
 		RotateCenter,
 		RotateVertex,
-		Tr,
+		//Tr,																						/// Esta variable está definida en el artículo de 1981
 		i, j,
 		ExposedEdges = 0,
 		PgonsPerVertex = 0;
@@ -299,45 +290,59 @@
 		DrawPgonPattern(InitialTransformation);
 
 		if (Layerdiff > 0){
-			if (Adyacency == "Edge")
+			if (Adyacency == "Edge"){
 				ExposedEdges = p - 3;
 
-			else if (Adyacency == "Vertex")
-				ExposedEdges = p - 2;
+				RotateCenter = matrixproduct(InitialTransformation,													//// Esto está en el artículo de 1986
+				matrixproduct(matrixproduct(RotateP, RotateP), RotateP));		//// InitialTransformation * RotateP ** 3
 			}
 
-		RotateCenter = matrixproduct(									///RotateP * RotateP * InitialTransformation
-			matrixproduct(RotateP, RotateP),
-			InitialTransformation);
+			else if (Adyacency == "Vertex"){
+				ExposedEdges = p - 2;
 
-		for (i = 0; i < ExposedEdges; i++){
-			Tr = matrixproduct(RotateEdge, RotateCenter);
+				RotateCenter = matrixproduct(InitialTransformation,													//// Esto está en el artículo de 1986
+				matrixproduct(RotateP, RotateP));														//// InitialTransformation * RotateP ** 2
+			}
 
-			console.log("Nueva matriz a aplicar a ReplicatePatern");
-			console.log(Tr);
+			/*RotateCenter = matrixproduct(									///RotateP * RotateP * InitialTransformation
+				matrixproduct(RotateP, RotateP),							/// Esto está en el artículo de 1981
+				InitialTransformation);*/
 
-			if(Layerdiff > 0)
-				ReplicatePatern(Tr, Layerdiff - 1, "Edge");
+			for (i = 0; i < ExposedEdges; i++){
+				//Tr = matrixproduct(RotateEdge, RotateCenter);					/// Esto está en el artículo de 1981
+				RotateVertex = matrixproduct(RotateCenter, RotateQ);		/// Esto está en el artículo de 1986
 
-			RotateCenter = matrixproduct(RotateP, RotateCenter);
+				//ReplicatePatern(Tr, Layerdiff - 1, "Edge");								/// Esto está en el artículo de 1981
+				ReplicatePatern(RotateVertex, Layerdiff - 1, "Edge");				/// Esto está en el artículo de 1986
 
-			if (i < ExposedEdges - 1)					//// El -1 es para compensar que la i empieza en 0
-				PgonsPerVertex = q - 3;
+				//RotateCenter = matrixproduct(RotateP, RotateCenter);			/// Esto está en el artículo de 1981
 
-			else if (i == ExposedEdges - 1)					//// El -1 es para compensar que la i empieza en 0
-				PgonsPerVertex = q - 4;
+				if (i < ExposedEdges - 1)									//// El -1 es para compensar que la i empieza en 0
+					PgonsPerVertex = q - 3;
 
-			RotateVertex = matrixproduct(RotateQ, RotateP);
+				else if (i == ExposedEdges - 1)						//// El -1 es para compensar que la i empieza en 0
+					PgonsPerVertex = q - 4;
 
-			for(j = 0; j < PgonsPerVertex; j++){
+				RotateVertex = matrixproduct(RotateQ, RotateP);
 
-				if(Layerdiff > 0)
+				/*for(j = 0; j < PgonsPerVertex; j++){				/// Este for es el del artículo de 1981
 					ReplicatePatern(
 						matrixproduct(RotateVertex, Tr),
 						Layerdiff - 1,
 						"Vertex");
 
 				RotateVertex = matrixproduct(RotateQ, RotateVertex);
+			}*/
+
+			for(j = 0; j < PgonsPerVertex; j++){
+				RotateVertex = matrixproduct(RotateVertex, RotateQ);	//
+				ReplicatePatern(RotateVertex,
+					Layerdiff - 1,
+					"Vertex");
+			}
+
+			RotateCenter = matrixproduct(RotateCenter, RotateP);		/// Este for, junto con esta línea, están en el artículo de 1986
+
 			}
 		}
 	}
@@ -345,52 +350,54 @@
 	//*******************************************************************************************
 	// Esta función es para probar pintar normal, funciona bien
 	// No se usa ahora mismo
-	//*******************************************************************************************
 
-		function draw(){
-			var canvas = document.getElementById('canvas1');
-			var prueba = ["Move", "Draw1", "Draw2", "Black", "Move1", "Draw3", "Red"];
+	/*function draw(){
+		var canvas = document.getElementById('canvas1');
+		var prueba = ["Move", "Draw1", "Draw2", "Black", "Move1", "Draw3", "Red"];
 
-			if(canvas.getContext){
-				var ctx = canvas.getContext('2d');
+		if(canvas.getContext){
+			var ctx = canvas.getContext('2d');
 
-				ctx.beginPath();
-				for (var i = 0; i < prueba.length; i++){
-					switch(prueba[i]){														////
-						case "Move":
-							ctx.moveTo(350, 350);
-							break;
+			ctx.beginPath();
+			for (var i = 0; i < prueba.length; i++){
+				switch(prueba[i]){														////
+					case "Move":
+						ctx.moveTo(350, 350);
+						break;
 
-						case "Move1":
-							ctx.moveTo(600, 600);
-							break;
+					case "Move1":
+						ctx.moveTo(600, 600);
+						break;
 
-						case "Draw1":
-							ctx.lineTo(100, 200);
-							break;
+					case "Draw1":
+						ctx.lineTo(100, 200);
+						break;
 
-						case "Black":
-							ctx.strokeStyle = "Black";		//Pinta los bordes del polígono
-							ctx.stroke();									/// Aun poniéndolo así, los dos segmentos salen rojos, el último color es rojo
-							break;
+					case "Black":
+						ctx.strokeStyle = "Black";		//Pinta los bordes del polígono
+						ctx.stroke();									/// Aun poniéndolo así, los dos segmentos salen rojos, el último color es rojo
+						break;
 
-						case "Red":
-							ctx.strokeStyle = "Red";		//Pinta los bordes del polígono
-							ctx.stroke();								/// Aun poniéndolo así, los dos segmentos salen rojos, el último color es rojo
-							break;
+					case "Red":
+						ctx.strokeStyle = "Red";		//Pinta los bordes del polígono
+						ctx.stroke();								/// Aun poniéndolo así, los dos segmentos salen rojos, el último color es rojo
+						break;
 
-						case "Draw2":
-							ctx.lineTo(200, 200);
-							break;
+					case "Draw2":
+						ctx.lineTo(200, 200);
+						break;
 
-						case "Draw3":
-							ctx.lineTo(650, 600);
-							break;
-					}
+					case "Draw3":
+						ctx.lineTo(650, 600);
+						break;
 				}
 			}
-
 		}
+
+	}*/
+
+
+
 
 	//draw();
 
@@ -399,10 +406,10 @@
 	 ///
 
 	 var puntos = {x0: 2.7, y0: -1.3, x1: 4.5, y1: -.45,
-		       x2: 5.4, y2: 2, x3: 4.9, y3: 1.75,
-		       x4: 2.49, y4: 1.85, x5: 2.4, y5:.8},
-		centro = {x: 600, y: 350},
-		escala = 20;
+		 						 x2: 5.4, y2: 2, x3: 4.9, y3: 1.75,
+							 	 x4: 2.49, y4: 1.85, x5: 2.4, y5:.8},
+			 centro = {x: 600, y: 350},
+			 escala = 20;
 
 // Enlace de Geogebra para ver los puntos originales
 // https://www.geogebra.org/geometry/wcx98k6u
@@ -411,15 +418,15 @@
  	 var X = [puntos.x0 * escala + centro.x, puntos.x1 * escala + centro.x,
 		 puntos.x2 * escala + centro.x, puntos.x3 * escala + centro.x,
 		 puntos.x4 * escala + centro.x, puntos.x5 * escala + centro.x],
- 	     Y = [puntos.y0 * escala + centro.y, puntos.y1 * escala + centro.y,
-		 puntos.y2 * escala + centro.y, puntos.y3 * escala + centro.y,
-		 puntos.y4 * escala + centro.y, puntos.y5 * escala + centro.y],
+ 			 Y = [puntos.y0 * escala + centro.y, puntos.y1 * escala + centro.y,
+		 				puntos.y2 * escala + centro.y, puntos.y3 * escala + centro.y,
+						puntos.y4 * escala + centro.y, puntos.y5 * escala + centro.y],
  	 Action = ["Move", "Draw", "Draw", "Draw", "Move", "Draw",
- 		"Move", "Draw", "Draw", "Draw", "Move", "Draw",
- 		"Move", "Draw", "Draw", "Draw", "Move", "Draw",
- 		"Move", "Draw", "Draw", "Draw", "Move", "Draw",
- 		"Move", "Draw", "Draw", "Draw", "Move", "Draw",
- 		"Move", "Draw", "Draw", "Draw", "Move", "Draw", "Black"];
+ 		  "Move", "Draw", "Draw", "Draw", "Move", "Draw",
+ 		  "Move", "Draw", "Draw", "Draw", "Move", "Draw",
+ 		  "Move", "Draw", "Draw", "Draw", "Move", "Draw",
+ 		  "Move", "Draw", "Draw", "Draw", "Move", "Draw",
+ 		  "Move", "Draw", "Draw", "Draw", "Move", "Draw", "Black"];
 
 	 /// Añado las rotaciones a los vectores X e Y
 	 for (var i = 1; i < p; i++){
@@ -433,8 +440,7 @@
 	 // Le añado un (0,0) a los puntos puesto que cuando llegue a este punto se eligirá el color
 	 X.push(0);
 	 Y.push(0);
-
-   DrawPgonPattern(Identity);
+	 ctx.beginPath();
 
 	 RotateCenter = Identity;
 
@@ -454,10 +460,13 @@
 					nLayers - 1,
 					"Vertex");
 
-				RotateVertex = matrixproduct(RotateQ, RotateVertex);
+			RotateVertex = matrixproduct(RotateQ, RotateVertex);
 		}
 	}
+
+  DrawPgonPattern(Identity);
 
 	</script>
 </body>
 </html>
+
