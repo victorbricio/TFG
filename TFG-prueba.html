@@ -41,12 +41,12 @@
 	var p = 6, q = 4, 		// parámetros p y q
 	nLayers = 1;			// Capas a dibujar
 
-	var										//// Create ReflectEdgeBisector
+	var					//// Create ReflectEdgeBisector
 	RB1 = [1,0,0],
 	RB2 = [0,-1,0],
 	RB3 = [0,0,1];
 
-	ReflectEdgeBisector = [RB1, RB2, RB3];	//// End creation				/// ReflectQ para 1986
+	ReflectEdgeBisector = [RB1, RB2, RB3];	//// End creation	/// ReflectQ para 1986
 
 	cosh_b = Math.cos(Math.PI / q) / Math.sin(Math.PI / p);		//// Create ReflectPgonEdge
 
@@ -59,16 +59,16 @@
 
 	ReflectPgonEdge = [RPE1, RPE2, RPE3];						//// End creation		/// ReflectP para el 1986
 
-	var																																	/// Create ReflectHypotenuse
+	var										/// Create ReflectHypotenuse
 	RH1 = [Math.cos(2 * Math.PI / p), Math.sin(2 * Math.PI / p), 0],
 	RH2 = [Math.sin(2 * Math.PI / p), - Math.cos(2 * Math.PI / p), 0],
 	RH3 = [0, 0, 1];
 
-	ReflectHypotenuse = [RH1, RH2, RH3];						/// End creation		// Reflect2 para 1986
+	ReflectHypotenuse = [RH1, RH2, RH3];						/// End creation	// Reflect2 para 1986
 
 
-	RotateP = matrixproduct(ReflectHypotenuse, ReflectEdgeBisector);				// 2 * Q
-	RotateQ = matrixproduct(ReflectPgonEdge, ReflectHypotenuse);				// P * 2
+	RotateP = matrixproduct(ReflectHypotenuse, ReflectEdgeBisector);		// Reflect2 * Reflect2
+	RotateQ = matrixproduct(ReflectPgonEdge, ReflectHypotenuse);			// Reflect2 * Reflect2
 	//RotateEdge = matrixproduct(ReflectPgonEdge, ReflectEdgeBisector);		// RotateEdge 1981 (este no está en 1986)
 
 
@@ -78,10 +78,10 @@
 	 ///
 
 	 var puntos = {x0: 0, y0: 3, x1: -2.6, y1: 1.5,
-		 						 x2: -2.6, y2: -1.5, x3: 0, y3: -3,
-							 	 x4: 2.6, y4: -1.5, x5: 2.6, y5:1.5},
+		       x2: -2.6, y2: -1.5, x3: 0, y3: -3,
+		       x4: 2.6, y4: -1.5, x5: 2.6, y5:1.5},
 	    centro = {x: 600, y: 350},
-			centro0 = {x: 0, y: 0},				/// Centrar las rotaciones en el centro
+	    centro0 = {x: 0, y: 0},				/// Centrar las rotaciones en el centro
 	    escala = 50;
 
 // Enlace de Geogebra para ver los puntos originales
@@ -183,7 +183,7 @@
 
 		for (i = 0; i < Action.length /*nPgonActions*/; i++){
 			//console.log("iteracion: " + i);
-			if (Action[i] != "Black"){													// Ahora mismo el único color que hay es Negro
+			if (Action[i] != "Black"){				// Ahora mismo el único color que hay es Negro
 				/*SumSquare = X[i] * X[i] + Y[i] * Y[i];
 
 				let Z = [[2 * X[i] / (1 - SumSquare)],
@@ -201,15 +201,15 @@
 				//console.log("Tx: " + Tx);
 				//console.log("Ty: " + Ty);  // CUA: hago log de 'moveTo' en lugar de 'lineTo'
 
-				if (transformation == Identity){
-					Tx = linealTransformation(Tx, escala, centro.x);
+				//if (transformation == Identity){
+				  Tx = linealTransformation(Tx, escala, centro.x);
 				  Ty = linealTransformation(Ty, escala, centro.y);
-				}
+				//}
 
-				else {
-					Tx = linealTransformation(Tx, escala, 600);
+				/*else {
+				  Tx = linealTransformation(Tx, escala, 600);
 				  Ty = linealTransformation(Ty, escala, 500);
-				}
+				}*/
 			}
 
 			switch(Action[i]){
@@ -262,7 +262,7 @@
 		let
 		//RotateCenter,
 		//RotateVertex,
-		//Tr,																						/// Esta variable está definida en el artículo de 1981
+		//Tr,										/// Esta variable está definida en el artículo de 1981
 		i, j,
 		ExposedEdges = 0,
 		PgonsPerVertex = 0;
@@ -273,34 +273,34 @@
 			if (Adyacency == "Edge"){
 				ExposedEdges = p - 3;
 
-				RotateCenter = matrixproduct(InitialTransformation,													//// Esto está en el artículo de 1986
-				matrixproduct(matrixproduct(RotateP, RotateP), RotateP));										//// InitialTransformation * RotateP ** 3
+				RotateCenter = matrixproduct(InitialTransformation,		//// Esto está en el artículo de 1986
+				matrixproduct(matrixproduct(RotateP, RotateP), RotateP));	//// InitialTransformation * RotateP ** 3
 			}
 
 			else if (Adyacency == "Vertex"){
 				ExposedEdges = p - 2;
 
-				RotateCenter = matrixproduct(InitialTransformation,													//// Esto está en el artículo de 1986
-				matrixproduct(RotateP, RotateP));																						//// InitialTransformation * RotateP ** 2
+				RotateCenter = matrixproduct(InitialTransformation,		//// Esto está en el artículo de 1986
+				matrixproduct(RotateP, RotateP));				//// InitialTransformation * RotateP ** 2
 			}
 
-			/*RotateCenter = matrixproduct(									///RotateP * RotateP * InitialTransformation
-				matrixproduct(RotateP, RotateP),							/// Esto está en el artículo de 1981
+			/*RotateCenter = matrixproduct(						///RotateP * RotateP * InitialTransformation
+				matrixproduct(RotateP, RotateP),				/// Esto está en el artículo de 1981
 				InitialTransformation);*/
 
 			for (i = 0; i < ExposedEdges; i++){
-				//Tr = matrixproduct(RotateEdge, RotateCenter);					/// Esto está en el artículo de 1981
+				//Tr = matrixproduct(RotateEdge, RotateCenter);			/// Esto está en el artículo de 1981
 				RotateVertex = matrixproduct(RotateCenter, RotateQ);		/// Esto está en el artículo de 1986
 
-				//ReplicatePatern(Tr, Layerdiff - 1, "Edge");								/// Esto está en el artículo de 1981
-				ReplicatePatern(RotateVertex, Layerdiff - 1, "Edge");				/// Esto está en el artículo de 1986
+				//ReplicatePatern(Tr, Layerdiff - 1, "Edge");			/// Esto está en el artículo de 1981
+				ReplicatePatern(RotateVertex, Layerdiff - 1, "Edge");		/// Esto está en el artículo de 1986
 
-				//RotateCenter = matrixproduct(RotateP, RotateCenter);			/// Esto está en el artículo de 1981
+				//RotateCenter = matrixproduct(RotateP, RotateCenter);		/// Esto está en el artículo de 1981
 
-				if (i < ExposedEdges - 1)									//// El -1 es para compensar que la i empieza en 0
+				if (i < ExposedEdges - 1)					//// El -1 es para compensar que la i empieza en 0
 					PgonsPerVertex = q - 3;
 
-				else if (i == ExposedEdges - 1)						//// El -1 es para compensar que la i empieza en 0
+				else if (i == ExposedEdges - 1)					//// El -1 es para compensar que la i empieza en 0
 					PgonsPerVertex = q - 4;
 
 				RotateVertex = matrixproduct(RotateQ, RotateP);
@@ -340,7 +340,7 @@
 
 			ctx.beginPath();
 			for (var i = 0; i < prueba.length; i++){
-				switch(prueba[i]){														////
+				switch(prueba[i]){		
 					case "Move":
 						ctx.moveTo(350, 350);
 						break;
@@ -355,12 +355,12 @@
 
 					case "Black":
 						ctx.strokeStyle = "Black";		//Pinta los bordes del polígono
-						ctx.stroke();									/// Aun poniéndolo así, los dos segmentos salen rojos, el último color es rojo
+						ctx.stroke();				/// Aun poniéndolo así, los dos segmentos salen rojos, el último color es rojo
 						break;
 
 					case "Red":
 						ctx.strokeStyle = "Red";		//Pinta los bordes del polígono
-						ctx.stroke();								/// Aun poniéndolo así, los dos segmentos salen rojos, el último color es rojo
+						ctx.stroke();				/// Aun poniéndolo así, los dos segmentos salen rojos, el último color es rojo
 						break;
 
 					case "Draw2":
@@ -412,14 +412,14 @@ function main()
 		 for ( let  j = 0; j < long_X_orig; j++){     // CUA usar 'X.length' en lugar de exactamente '6'
 			 let puntoRotado = {x:0, y:0};
 
-			 if (j != long_X_orig - 1)																					 // Cuando sea Negro, se añade el punto (0,0)
+			 if (j != long_X_orig - 1)			// Cuando sea Negro, se añade el punto (0,0)
 			 		puntoRotado = rotatePoint(X[j], Y[j], Math.PI / 3 * i, centro0);  // const en lugar de 'var'
 
 			 X.push(puntoRotado.x);
 			 Y.push(puntoRotado.y);
 			 Action.push(Action[j]) ; //  CUA: mejor adoptar política siempre tres 'Push' paralelos
 		 }
-	 }*/
+	 }*/		//En este caso no será necesario hacer el triple push paralelo puesto que aquí solo estoy haciendo un hexágono
 
 	 DrawPgonPattern(Identity);
 	//return ;
@@ -427,7 +427,7 @@ function main()
 
 
 
-		if (nLayers > 0){															/// Para poder dibujar solo la primera capa (la capa 0)
+		if (nLayers > 0){			/// Para poder dibujar solo la primera capa (la capa 0)
 		 /*RotateCenter = Identity;
 
 	   for (var i = 0; i < p; i++){
@@ -448,7 +448,7 @@ function main()
 
 				RotateVertex = matrixproduct(RotateQ, RotateVertex);
 			}
-		}*/																																			// Artículo de 1981
+		}*/				// Artículo de 1981
 
 		RotateCenter = Identity;
 
