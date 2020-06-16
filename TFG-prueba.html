@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,104 +5,23 @@
 <body>
 
 <p>
-<canvas id="canvas1" width="1000" height="700"></canvas></td>
+<canvas id="canvas1" width="1000" height="700"></canvas>
 </p>
 	<script type="text/javascript" id="fuente">
 
 	var
-	//// Variables globales del canvas
-	// Estas variables que están comentadas las cogí del código que me proporcionaste.
-	// Pero puesto que con las dos últimas funciona bien lo he dejado así.
-	/*ctx,
-	ctx_doc,
-	ctx_aux,
-	canv_doc,
-	canv_aux,
-	tcx,
-	tcy,*/
 	canvas = document.getElementById('canvas1'),
-	ctx = canvas.getContext('2d'),
-
-
-	///// Variables globales de la geometria
-	ReflectEdgeBisector,
-	ReflectPgonEdge,
-	cosh_b,
-	RotateP,
-	RotateQ,
-	RotateEdge,
-	Identity = [[1,0,0], [0,1,0], [0,0,1]],
-	Tr,
-	RotateCenter,
-	RotateVertex;
+	ctx = canvas.getContext('2d');
 
 	var p = 6, q = 4, 		// parámetros p y q
-	nLayers = 1;			// Capas a dibujar
+	nLayers = 2;			// Capas a dibujar
 
-	var					//// Create ReflectEdgeBisector
-	RB1 = [1,0,0],
-	RB2 = [0,-1,0],
-	RB3 = [0,0,1];
-
-	ReflectEdgeBisector = [RB1, RB2, RB3];	//// End creation	/// ReflectQ para 1986
-
-	cosh_b = Math.cos(Math.PI / q) / Math.sin(Math.PI / p);		//// Create ReflectPgonEdge
-
-	var
-	cosh_2b = 2 * cosh_b * cosh_b - 1,
-	sinh_2b = Math.sqrt(cosh_2b * cosh_2b - 1),
-	RPE1 = [-cosh_2b, 0, sinh_2b],
-	RPE2 = [0, 1, 0],
-	RPE3 = [-sinh_2b, 0, cosh_2b];
-
-	ReflectPgonEdge = [RPE1, RPE2, RPE3];						//// End creation		/// ReflectP para el 1986
-
-	var										/// Create ReflectHypotenuse
-	RH1 = [Math.cos(2 * Math.PI / p), Math.sin(2 * Math.PI / p), 0],
-	RH2 = [Math.sin(2 * Math.PI / p), - Math.cos(2 * Math.PI / p), 0],
-	RH3 = [0, 0, 1];
-
-	ReflectHypotenuse = [RH1, RH2, RH3];						/// End creation	// Reflect2 para 1986
-
-
-	RotateP = matrixproduct(ReflectHypotenuse, ReflectEdgeBisector);		// Reflect2 * Reflect2
-	RotateQ = matrixproduct(ReflectPgonEdge, ReflectHypotenuse);			// Reflect2 * Reflect2
-	//RotateEdge = matrixproduct(ReflectPgonEdge, ReflectEdgeBisector);		// RotateEdge 1981 (este no está en 1986)
-
-
-
-	 ///
-	 // Definición de los vectores X, Y y Action
-	 ///
-
-	 var puntos = {x0: 0, y0: 3, x1: -2.6, y1: 1.5,
-		       x2: -2.6, y2: -1.5, x3: 0, y3: -3,
-		       x4: 2.6, y4: -1.5, x5: 2.6, y5:1.5},
-	    centro = {x: 600, y: 350},
-	    centro0 = {x: 0, y: 0},				/// Centrar las rotaciones en el centro
-	    escala = 50;
-
-// Enlace de Geogebra para ver los puntos originales
-// https://www.geogebra.org/geometry/wcx98k6u
-
-		// Los vectores X e Y toman los puntos que están definidos en Geogebra, les aplica la escala y los traslada al centro
- 	 var /*X = [linealTransformation(puntos.x0, escala, centro.x), linealTransformation(puntos.x1, escala, centro.x),
-		 				linealTransformation(puntos.x2, escala, centro.x), linealTransformation(puntos.x3, escala, centro.x),
-		 				linealTransformation(puntos.x4, escala, centro.x), linealTransformation(puntos.x5, escala, centro.x)],
- 	     Y = [linealTransformation(puntos.y0, escala, centro.y), linealTransformation(puntos.y1, escala, centro.y),
-		 	 			linealTransformation(puntos.y2, escala, centro.y), linealTransformation(puntos.y3, escala, centro.y),
-		 				linealTransformation(puntos.y4, escala, centro.y), linealTransformation(puntos.y5, escala, centro.y)],*/
- 	 Action = ["Move", "Draw", "Draw", "Draw", "Draw", "Draw", "Draw" ],
-	 X = [puntos.x0, puntos.x1, puntos.x2, puntos.x3, puntos.x4, puntos.x5, puntos.x0],
-	 Y = [puntos.y0, puntos.y1, puntos.y2, puntos.y3, puntos.y4, puntos.y5, puntos.y0];
-
-	  // es mejor que definir 'Action' siempre con la misma longitud que 'X' e 'Y', y hacer siempre tres push paralelos en las tres
-
- 		//   "Move", "Draw", "Draw", "Draw", "Move", "Draw",
- 		//   "Move", "Draw", "Draw", "Draw", "Move", "Draw",
- 		//   "Move", "Draw", "Draw", "Draw", "Move", "Draw",
- 		//   "Move", "Draw", "Draw", "Draw", "Move", "Draw",
- 		//   "Move", "Draw", "Draw", "Draw", "Move", "Draw", "Black"];
+	 var /*puntos = {x0: 0, y0: 3, x1: -2.6, y1: 1.5,
+		 	x2: -2.6, y2: -1.5, x3: 0, y3: -3,
+			x4: 2.6, y4: -1.5, x5: 2.6, y5:1.5},*/
+	    centro = {x: 600, y: 375},
+	    //centro0 = {x: 0, y: 0},				/// Centrar las rotaciones en el centro
+	    escala = 250;
 
 		//**********************************************************************
 		// Hace una transformacion lineal
@@ -137,341 +54,35 @@
 		return p;
 	}
 
-	//**********************************************************************
+// Alert en el caso de que la teselación elegida no sea hiperbólica
+if ((p - 2) * (q - 2) <= 4)
+  window.alert("Esta teselación no es hiperbólica")
 
-	// Supongo que mat1 es 3x3 y mat2 va a ser 3x3 o 3x1
+// Variables numéricas del artículo
+let a = 1 - Math.tan(Math.PI / p) * Math.tan(Math.PI / q),					/// Variable de apoyo
+    s = Math.sqrt(a / (2 - a)),									//// Vértice hiperbólico  (s,0)
+    h = s / a,											//// Altura del centro del lado de un polígono
+    r = Math.sqrt(h * h / (Math.cos(Math.PI / p) * Math.cos(Math.PI / p)) - 1);			//// Radio de la circunferencia de un lado de un polígono
 
-	function matrixproduct( mat1, mat2 )
-	{
-		if (mat2[0].length == 3)
-			var matrizRes = [[0,0,0], [0,0,0], [0,0,0]];
 
-		else if (mat2[0].length == 1)
-			var matrizRes = [[0], [0], [0]];
+/// Centro de las circunferiencias que forman los lados
+let c = {x: linealTransformation(h, escala, centro.x), y: linealTransformation(h * Math.tan(Math.PI / p), escala, centro.y)};
 
-   		for (var i = 0; i < mat1.length; i++){
-			for (var j = 0; j < mat2[0].length; j++){
-				for (var k = 0; k < mat2.length; k++){
-				 	matrizRes[i][j] += (mat1[i][k] * mat2[k][j]);
-				}
-			}
-		}
+// Disco de Poincaré (borde del disco)
+ctx.beginPath();
+ctx.arc(centro.x, centro.y, escala, 0, 2 * Math.PI, false);
+ctx.strokeStyle = 'Blue';
+ctx.stroke();
 
-		return matrizRes;
-    }
 
-	//**********************************************************************
-
-	function elementoHTML( id )
-	{
-		var elem = document.getElementById( id ) ;
-
-		if ( ! elem )
-			{
-				alert('error: no hay en el documento un elemento html con identificador igual a "'+id+"'");
-		   	exit() ;
-			}
-		return elem ;
-	}
-
-	//*******************************************************************************************
-
-	function DrawPgonPattern(transformation){
-		var
-		SumSquare,
-		Tx, Ty;
-
-		for (i = 0; i < Action.length /*nPgonActions*/; i++){
-			//console.log("iteracion: " + i);
-			if (Action[i] != "Black"){				// Ahora mismo el único color que hay es Negro
-				/*SumSquare = X[i] * X[i] + Y[i] * Y[i];
-
-				let Z = [[2 * X[i] / (1 - SumSquare)],
-					[2 * Y[i] / (1 - SumSquare)],
-					[(1 + SumSquare) / (1 - SumSquare)]];
-
-				Z = matrixproduct(transformation, Z);				/// Desde debajo del if (Action[i] != "Black") está en el artículo de 1981*/
-
-				let coordinates = [[X[i]], [Y[i]], [0]];							///
-				let Z = matrixproduct(transformation, coordinates);		/// Estas dos líneas están en el artículo de 1986
-
-				Tx = Z[0][0] / (1 + Z[2][0]);
-				Ty = Z[1][0] / (1 + Z[2][0]);
-
-				//console.log("Tx: " + Tx);
-				//console.log("Ty: " + Ty);  // CUA: hago log de 'moveTo' en lugar de 'lineTo'
-
-				//if (transformation == Identity){
-				  Tx = linealTransformation(Tx, escala, centro.x);
-				  Ty = linealTransformation(Ty, escala, centro.y);
-				//}
-
-				/*else {
-				  Tx = linealTransformation(Tx, escala, 600);
-				  Ty = linealTransformation(Ty, escala, 500);
-				}*/
-			}
-
-			switch(Action[i]){
-				case "Move":
-					ctx.moveTo(Tx, Ty);
-					console.log(`ctx.moveTo(${Tx},${Ty})`)
-					break;
-
-				case "Draw":
-					ctx.lineTo(Tx, Ty);
-					console.log(`ctx.lineTo(${Tx},${Ty})`)
-					break;
-
-				case "Black":
-					ctx.strokeStyle = "Black";		//Pinta los bordes del polígono
-					ctx.stroke();
-					ctx.beginPath();
-					console.log(`Black == ctx.stroke() ; ctx.beginPath()`)
-					break;
-
-				case "Blue":
-					ctx.strokeStyle = "Blue";
-					ctx.stroke();
-					ctx.beginPath();
-					console.log(`Blue == ctx.stroke() ; ctx.beginPath()`)
-					break;
-
-				case "Red":
-					ctx.strokeStyle = "Red";
-					ctx.stroke();
-					ctx.beginPath();
-					console.log(`Red == ctx.stroke() ; ctx.beginPath()`)
-					break;
-
-				case "Yellow":
-					ctx.strokeStyle = "Yellow";
-					ctx.stroke();
-					ctx.beginPath();
-					console.log(`Yellow: == ctx.stroke() ; ctx.beginPath()`)
-					break;
-				default :
-					throw RangeError(`Action[${i}] has an incorrect value`)
-			}
-		}
-	}
-
-	//*******************************************************************************************
-
-	function ReplicatePatern(InitialTransformation, Layerdiff, Adyacency){
-		let
-		//RotateCenter,
-		//RotateVertex,
-		//Tr,										/// Esta variable está definida en el artículo de 1981
-		i, j,
-		ExposedEdges = 0,
-		PgonsPerVertex = 0;
-
-		DrawPgonPattern(InitialTransformation);
-
-		if (Layerdiff > 0){
-			if (Adyacency == "Edge"){
-				ExposedEdges = p - 3;
-
-				RotateCenter = matrixproduct(InitialTransformation,		//// Esto está en el artículo de 1986
-				matrixproduct(matrixproduct(RotateP, RotateP), RotateP));	//// InitialTransformation * RotateP ** 3
-			}
-
-			else if (Adyacency == "Vertex"){
-				ExposedEdges = p - 2;
-
-				RotateCenter = matrixproduct(InitialTransformation,		//// Esto está en el artículo de 1986
-				matrixproduct(RotateP, RotateP));				//// InitialTransformation * RotateP ** 2
-			}
-
-			/*RotateCenter = matrixproduct(						///RotateP * RotateP * InitialTransformation
-				matrixproduct(RotateP, RotateP),				/// Esto está en el artículo de 1981
-				InitialTransformation);*/
-
-			for (i = 0; i < ExposedEdges; i++){
-				//Tr = matrixproduct(RotateEdge, RotateCenter);			/// Esto está en el artículo de 1981
-				RotateVertex = matrixproduct(RotateCenter, RotateQ);		/// Esto está en el artículo de 1986
-
-				//ReplicatePatern(Tr, Layerdiff - 1, "Edge");			/// Esto está en el artículo de 1981
-				ReplicatePatern(RotateVertex, Layerdiff - 1, "Edge");		/// Esto está en el artículo de 1986
-
-				//RotateCenter = matrixproduct(RotateP, RotateCenter);		/// Esto está en el artículo de 1981
-
-				if (i < ExposedEdges - 1)					//// El -1 es para compensar que la i empieza en 0
-					PgonsPerVertex = q - 3;
-
-				else if (i == ExposedEdges - 1)					//// El -1 es para compensar que la i empieza en 0
-					PgonsPerVertex = q - 4;
-
-				RotateVertex = matrixproduct(RotateQ, RotateP);
-
-				/*for(j = 0; j < PgonsPerVertex; j++){				/// Este for es el del artículo de 1981
-					ReplicatePatern(
-						matrixproduct(RotateVertex, Tr),
-						Layerdiff - 1,
-						"Vertex");
-
-				RotateVertex = matrixproduct(RotateQ, RotateVertex);
-			}*/
-
-			for(j = 0; j < PgonsPerVertex; j++){
-				RotateVertex = matrixproduct(RotateVertex, RotateQ);
-				ReplicatePatern(RotateVertex,
-					Layerdiff - 1,
-					"Vertex");
-			}
-
-			RotateCenter = matrixproduct(RotateCenter, RotateP);		/// Este for, junto con esta línea, están en el artículo de 1986
-
-			}
-		}
-	}
-
-	//*******************************************************************************************
-	// Esta función es para probar pintar normal, funciona bien
-	// No se usa ahora mismo
-
-	/*function draw(){
-		var canvas = document.getElementById('canvas1');
-		var prueba = ["Move", "Draw1", "Draw2", "Black", "Move1", "Draw3", "Red"];
-
-		if(canvas.getContext){
-			var ctx = canvas.getContext('2d');
-
-			ctx.beginPath();
-			for (var i = 0; i < prueba.length; i++){
-				switch(prueba[i]){		
-					case "Move":
-						ctx.moveTo(350, 350);
-						break;
-
-					case "Move1":
-						ctx.moveTo(600, 600);
-						break;
-
-					case "Draw1":
-						ctx.lineTo(100, 200);
-						break;
-
-					case "Black":
-						ctx.strokeStyle = "Black";		//Pinta los bordes del polígono
-						ctx.stroke();				/// Aun poniéndolo así, los dos segmentos salen rojos, el último color es rojo
-						break;
-
-					case "Red":
-						ctx.strokeStyle = "Red";		//Pinta los bordes del polígono
-						ctx.stroke();				/// Aun poniéndolo así, los dos segmentos salen rojos, el último color es rojo
-						break;
-
-					case "Draw2":
-						ctx.lineTo(200, 200);
-						break;
-
-					case "Draw3":
-						ctx.lineTo(650, 600);
-						break;
-				}
-			}
-		}
-
-	}*/
-
-
-
-
-	//draw();
-
-
-
-
-//*******************************************************************************************
-// función principal (la introduzco para poder poner 'return' antes de que acabe)
-
-function main()
-{
-	console.log(`main(): p == ${p}`)
-
-	// Le añado un (0,0) a los puntos puesto que cuando llegue a este punto se eligirá el color
-	X.push(0);
-	Y.push(0);
-	Action.push("Black")  // CUA: mejor adoptar política siempre tres 'Push' paralelos
-
+for (let i = 0; i < p; i++){
 	ctx.beginPath();
 
-
-
-	if ( X.length != Y.length || X.length != Action.length )
-		throw RangeError(`las longitudes de X/Y/Action no coinciden, están mal definidas`)
-
-	console.log(`X.length == ${X.length}, p == ${p}`)
-
-	const long_X_orig = X.length;
-
-	 /// Añado las rotaciones a los vectores X e Y (y Action)
-	 /*for ( let i = 1; i < p; i++){   // cambiar 'var' por 'let'
-		 for ( let  j = 0; j < long_X_orig; j++){     // CUA usar 'X.length' en lugar de exactamente '6'
-			 let puntoRotado = {x:0, y:0};
-
-			 if (j != long_X_orig - 1)			// Cuando sea Negro, se añade el punto (0,0)
-			 		puntoRotado = rotatePoint(X[j], Y[j], Math.PI / 3 * i, centro0);  // const en lugar de 'var'
-
-			 X.push(puntoRotado.x);
-			 Y.push(puntoRotado.y);
-			 Action.push(Action[j]) ; //  CUA: mejor adoptar política siempre tres 'Push' paralelos
-		 }
-	 }*/		//En este caso no será necesario hacer el triple push paralelo puesto que aquí solo estoy haciendo un hexágono
-
-	 DrawPgonPattern(Identity);
-	//return ;
-
-
-
-
-		if (nLayers > 0){			/// Para poder dibujar solo la primera capa (la capa 0)
-		 /*RotateCenter = Identity;
-
-	   for (var i = 0; i < p; i++){
-			Tr = matrixproduct(RotateEdge, RotateCenter);
-			console.log("Matriz a aplicar al ReplicatePatern");
-			console.log(Tr);
-
-			ReplicatePatern(Tr, nLayers - 1, "Edge");
-
-			RotateCenter = matrixproduct(RotateP, RotateCenter);
-			RotateVertex = matrixproduct(RotateQ, RotateP);
-
-			for (var j = 0; j < q - 3; j++){
-					ReplicatePatern(
-						matrixproduct(RotateVertex, Tr),
-						nLayers - 1,
-						"Vertex");
-
-				RotateVertex = matrixproduct(RotateQ, RotateVertex);
-			}
-		}*/				// Artículo de 1981
-
-		RotateCenter = Identity;
-
-		for (let i = 0; i < p; i++){
-			RotateVertex = matrixproduct(RotateCenter, RotateQ);
-
-			ReplicatePatern(RotateVertex, nLayers - 2, "Edge");
-
-			for (let j = 0; j < q - 3; j++){
-				RotateVertex = matrixproduct(RotateVertex, RotateQ);
-				ReplicatePatern(RotateVertex, nLayers - 2, "Vertex");
-			}
-
-			RotateCenter = matrixproduct(RotateCenter, RotateP);									// Artículo de 1986
-		}
-	}
+	puntoRotado = rotatePoint(c.x, c.y, 2 * Math.PI / p * i, centro);
+	ctx.arc(puntoRotado.x, puntoRotado.y, r * escala, 2 * Math.PI / p * (i + p / 2),  2 * Math.PI / p * (i + p / 2 + 1), false);
+	ctx.strokeStyle = 'Black';
+	ctx.stroke();
 }
-
-//******************************************************************
-// llamada a la función principal
-
-main()
-
 
 </script>
 </body>
