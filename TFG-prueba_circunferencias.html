@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+
+<p>
+<canvas id="canvas1" width="1000" height="700"></canvas></td>
+</p>
+	<script type="text/javascript" src="Circunferencia.js"></script>
+	<script type="text/javascript" id="fuente">
+
+	let
+	canvas = document.getElementById('canvas1'),
+	ctx = canvas.getContext('2d'),
+
+
+	///// Variables globales de la geometria
+	ReflectEdgeBisector,
+	ReflectPgonEdge,
+	cosh_b,
+	RotateP,
+	RotateQ,
+	RotateEdge,
+	Identity = [[1,0,0], [0,1,0], [0,0,1]];
+	/*Tr,
+	RotateCenter,
+	RotateVertex;*/
+
+	var Edges = [];
+	var contador_para_controlar_las_circunferencias_repetidas = 0;
+
+	let p = 6, q = 4, 		// parámetros p y q
+
+	nLayers = 1;			// Capas a dibujar
+
+	let				//// Create ReflectEdgeBisector
+	RB1 = [1,0,0],
+	RB2 = [0,-1,0],
+	RB3 = [0,0,1];
+
+	ReflectEdgeBisector = [RB1, RB2, RB3];				//// End creation	/// ReflectQ para 1986
+
+	cosh_b = Math.cos(Math.PI / q) / Math.sin(Math.PI / p);		//// Create ReflectPgonEdge
+
+	let
+	cosh_2b = 2 * cosh_b * cosh_b - 1,
+	sinh_2b = Math.sqrt(cosh_2b * cosh_2b - 1),
+	RPE1 = [-cosh_2b, 0, sinh_2b],
+	RPE2 = [0, 1, 0],
+	RPE3 = [-sinh_2b, 0, cosh_2b];
+
+	ReflectPgonEdge = [RPE1, RPE2, RPE3];				//// End creation	/// ReflectP para el 1986
+
+	let											/// Create ReflectHypotenuse
+	RH1 = [Math.cos(2 * Math.PI / p), Math.sin(2 * Math.PI / p), 0],
+	RH2 = [Math.sin(2 * Math.PI / p), - Math.cos(2 * Math.PI / p), 0],
+	RH3 = [0, 0, 1];
+
+	ReflectHypotenuse = [RH1, RH2, RH3];				/// End creation	// Reflect2 para 1986
+
+
+	RotateP = matrixproduct(ReflectHypotenuse, ReflectEdgeBisector);		// 2 * Q
+	RotateQ = matrixproduct(ReflectPgonEdge, ReflectHypotenuse);			// P * 2
+	//RotateEdge = matrixproduct(ReflectPgonEdge, ReflectEdgeBisector);		// RotateEdge 1981 (este no está en 1986)
+
+
+	 ///
+	 // Definición de los vectores X, Y y Action
+	 ///
+
+	 let /*puntos = {x0: 0/6, y0: 3/6, x1: -2.6/6, y1: 1.5/6,
+		       x2: -2.6/6, y2: -1.5/6, x3: 0/6, y3: -3/6,
+		       x4: 2.6/6, y4: -1.5/6, x5: 2.6/6, y5: 1.5/6},*/
+
+	    centro = {x: 600, y: 350},
+			centro0 = {x: 0, y: 0},		/// Centrar las rotaciones en el centro
+	    escala = 250;
+
+// Enlace de Geogebra para ver los puntos originales
+// https://www.geogebra.org/geometry/wcx98k6u
+
+// Los vectores X e Y toman los puntos que están definidos en Geogebra, les aplica la escala y los traslada al centro
+ 	/*var Action = ["Move", "Draw", "Draw", "Draw", "Draw", "Draw", "Draw"],		/// 6,4
+	    X = [puntos.x0, puntos.x1, puntos.x2, puntos.x3, puntos.x4, puntos.x5, puntos.x0],
+	    Y = [puntos.y0, puntos.y1, puntos.y2, puntos.y3, puntos.y4, puntos.y5, puntos.y0];*/
+
+
+	//**********************************************************************
+	// Hace una transformacion lineal
+
+	function linealTransformation(punto, escala, centro){
+		return punto * escala + centro;
+	}
+
+	//**********************************************************************
+
+	// x e y: son las coordenadas del punto a rotar
+	// alpha: es el ángulo en radianes que queremos rotar el punto
+	// centro: es el centro de la rotación
+
+	function rotatePoint(x, y, alpha, centro) {
+		let sin = Math.sin(alpha);
+		let cos = Math.cos(alpha);
+
+		// Trasladar al centro
+		x -= centro.x;
+		y -= centro.y;
+
+		// Rotar
+		let newX = x * cos - y * sin;
+		let newY = x * sin + y * cos;
+
+		// Trasladar de vuelta
+		let p = {x: newX + centro.x, y: newY + centro.y};
+
+		return p;
+	}
+
+
+	//**********************************************************************
+
+	// Supongo que mat1 es 3x3 y mat2 va a ser 3x3 o 3x1
+
+	function matrixproduct( mat1, mat2 )
+	{
+		if (mat2[0].length == 3)
+			var matrizRes = [[0,0,0], [0,0,0], [0,0,0]];
+
+		else if (mat2[0].length == 1)
+			var matrizRes = [[0], [0], [0]];
+
+   		for (let i = 0; i < mat1.length; i++){
+				for (let j = 0; j < mat2[0].length; j++){
+					for (let k = 0; k < mat2.length; k++){
+				 		matrizRes[i][j] += (mat1[i][k] * mat2[k][j]);
+					}
+				}
+			}
+
+			return matrizRes;
+    }
+
+	//**********************************************************************
+
+	function elementoHTML( id )
+	{
+		let elem = document.getElementById( id ) ;
+
+		if ( ! elem )
+			{
+				alert('error: no hay en el documento un elemento html con identificador igual a "'+id+"'");
+		   	exit() ;
+			}
+		return elem ;
+	}
+
+	function InArray(element, array){
+		var found = false;
+
+		for (let i = 0; i < array.length; i++){
+			if (array[i] == element ||
+				 (Math.abs(array[i].x1 - element.x2) <= 0.01 && Math.abs(array[i].x2 - element.x1) <= 0.01 &&
+				  Math.abs(array[i].y1 - element.y2) <= 0.01 && Math.abs(array[i].y2 - element.y1) <= 0.01))
+				found = true;
+		}
+
+		return found;
+	}
+
+	//*******************************************************************************************
+
+	function DrawPgonPattern(transformation, Adyacency = "None"){
+		var
+		//SumSquare,
+		Tx, Ty, oldTx, oldTy;
+
+		for (i = 0; i < Action.length /*nPgonActions*/; i++){
+			//console.log("iteracion: " + i);
+			if (Action[i] != "Black"){						// Ahora mismo el único color que hay es Negro
+				/*SumSquare = X[i] * X[i] + Y[i] * Y[i];
+
+				let Z = [[2 * X[i] / (1 - SumSquare)],
+					[2 * Y[i] / (1 - SumSquare)],
+					[(1 + SumSquare) / (1 - SumSquare)]];
+
+				Z = matrixproduct(transformation, Z);				/// Desde debajo del if (Action[i] != "Black") está en el artículo de 1981*/
+
+				//let poicareCoordinates = [[X[i]], [Y[i]]];				///
+				let weierstrassCoordinates = [[(2 * X[i]) / (1 - X[i] * X[i] - Y[i] * Y[i])],
+							      									[(2 * Y[i]) / (1 - X[i] * X[i] - Y[i] * Y[i])],
+							      									[(1 + X[i] * X[i] + Y[i] * Y[i]) / (1 - X[i] * X[i] - Y[i] * Y[i])]];
+				let Z = matrixproduct(transformation, weierstrassCoordinates);
+
+				Tx = Z[0][0] / (1 + Z[2][0]);
+				Ty = Z[1][0] / (1 + Z[2][0]);
+
+				//console.log("Tx: " + Tx);
+				//console.log("Ty: " + Ty);  // CUA: hago log de 'moveTo' en lugar de 'lineTo'
+
+				Tx = linealTransformation(Tx, escala, centro.x);
+				Ty = linealTransformation(Ty, escala, centro.y);
+
+				if (i != 0){
+					var edge = {x1: oldTx, y1: oldTy, x2: Tx, y2: Ty};
+
+					/*if (Adyacency == "Edge" && i == 6){
+						ctx.beginPath();
+						ctx.arc(oldTx, oldTy, 5, 0, 2 * Math.PI, false);
+						ctx.strokeStyle = 'Green';
+						ctx.stroke();
+
+						ctx.beginPath();
+						ctx.arc(Tx, Ty, 5, 0, 2 * Math.PI, false);
+						ctx.strokeStyle = 'Green';
+						ctx.stroke();
+
+						/*console.log(Tx);
+						console.log(Ty);
+						console.log(oldTx);
+						console.log(oldTy);
+					}*/
+
+					/*var sentido = 1;
+
+					if (!InArray(edge, Edges))
+						sentido = -1;
+
+					if ((Adyacency == "Vertex" && i == 2))
+						sentido = 1;
+
+					if (Adyacency == "Edge" && i == 6)
+						sentido = -1;
+
+					var circunference = new Circunferencia(oldTx, oldTy, Tx, Ty, ctx, sentido, centro, escala);
+					circunference.draw();
+
+					Edges.push(edge);*/
+
+					if (!InArray(edge, Edges)){
+						/*var drawn = false;
+						// Primera circunferencia
+						var circunferencePos = new Circunferencia(oldTx, oldTy, Tx, Ty, ctx, 1, centro, escala);
+						if (circunferencePos.drawable())
+							drawn = true;
+
+						// Segunda circunferencia
+						if (!drawn){
+							var circunferenceNeg = new Circunferencia(oldTx, oldTy, Tx, Ty, ctx, -1, centro, escala);
+							circunferenceNeg.drawable();
+						}*/
+
+						// Primera circunferencia
+						var circunferencePos = new Circunferencia(oldTx, oldTy, Tx, Ty, ctx, 1, centro, escala);
+
+						// Segunda circunferencia
+						var circunferenceNeg = new Circunferencia(oldTx, oldTy, Tx, Ty, ctx, -1, centro, escala);
+
+						if (circunferencePos.discriminant() * circunferenceNeg.discriminant() > 0){
+							contador_para_controlar_las_circunferencias_repetidas++;
+
+							if (contador_para_controlar_las_circunferencias_repetidas % 2 == 0)
+								circunferencePos.drawable();
+
+							else
+								circunferenceNeg.drawable();
+						}
+
+						else {
+							circunferencePos.drawable();
+							circunferenceNeg.drawable();
+						}
+					}
+					Edges.push(edge);
+				}
+
+				oldTx = Tx;
+				oldTy = Ty;
+			}
+
+			/*switch(Action[i]){
+				case "Move":
+					ctx.moveTo(Tx, Ty);
+					//console.log(`ctx.moveTo(${Tx},${Ty})`)
+					break;
+
+				case "Draw":
+					ctx.lineTo(Tx, Ty);
+					//console.log(`ctx.lineTo(${Tx},${Ty})`)
+					break;
+
+				case "Black":
+					ctx.strokeStyle = "Black";		//Pinta los bordes del polígono
+					ctx.stroke();
+					ctx.beginPath();
+					//console.log(`Black == ctx.stroke() ; ctx.beginPath()`)
+					break;
+
+				case "Blue":
+					ctx.strokeStyle = "Blue";
+					ctx.stroke();
+					ctx.beginPath();
+					console.log(`Blue == ctx.stroke() ; ctx.beginPath()`)
+					break;
+
+				case "Red":
+					ctx.strokeStyle = "Red";
+					ctx.stroke();
+					ctx.beginPath();
+					console.log(`Red == ctx.stroke() ; ctx.beginPath()`)
+					break;
+
+				case "Yellow":
+					ctx.strokeStyle = "Yellow";
+					ctx.stroke();
+					ctx.beginPath();
+					console.log(`Yellow: == ctx.stroke() ; ctx.beginPath()`)
+					break;
+				default :
+					throw RangeError(`Action[${i}] has an incorrect value`)
+			}*/
+		}
+	}
+
+	//*******************************************************************************************
+
+	function ReplicatePatern(InitialTransformation, Layerdiff, Adyacency){
+		let
+		RotateCenter,
+		RotateVertex,
+		//Tr,										/// Esta variable está definida en el artículo de 1981
+		i, j,
+		ExposedEdges,
+		PgonsPerVertex;
+
+		DrawPgonPattern(InitialTransformation, Adyacency);
+
+		if (Layerdiff > 0){
+
+			Rotate2P = matrixproduct(RotateP, RotateP);
+
+			if (Adyacency == "Edge"){
+				ExposedEdges = p - 3;
+				Rotate3P = matrixproduct(Rotate2P, RotateP);
+
+				RotateCenter = matrixproduct(InitialTransformation,	Rotate3P);	//// Esto está en el artículo de 1986
+			}
+
+			else if (Adyacency == "Vertex"){
+				ExposedEdges = p - 2;
+
+				RotateCenter = matrixproduct(InitialTransformation, Rotate2P);		//// Esto está en el artículo de 1986
+			}
+
+			/*RotateCenter = matrixproduct(						///RotateP * RotateP * InitialTransformation
+				matrixproduct(RotateP, RotateP),				/// Esto está en el artículo de 1981
+				InitialTransformation);*/
+
+			for (i = 0; i < ExposedEdges; i++){
+				//Tr = matrixproduct(RotateEdge, RotateCenter);						/// Esto está en el artículo de 1981
+				RotateVertex = matrixproduct(RotateCenter, RotateQ);			/// Esto está en el artículo de 1986
+
+				//ReplicatePatern(Tr, Layerdiff - 1, "Edge");							/// Esto está en el artículo de 1981
+				ReplicatePatern(RotateVertex,
+												Layerdiff - 1,
+												"Edge");			/// Esto está en el artículo de 1986
+
+				//RotateCenter = matrixproduct(RotateP, RotateCenter);		/// Esto está en el artículo de 1981
+
+				if (i < ExposedEdges - 1)					//// El -1 es para compensar que la i empieza en 0
+					PgonsPerVertex = q - 3;
+
+				else if (i == ExposedEdges - 1)					//// El -1 es para compensar que la i empieza en 0
+					PgonsPerVertex = q - 4;
+
+				//RotateVertex = matrixproduct(RotateQ, RotateP);
+
+				/*for(j = 0; j < PgonsPerVertex; j++){				/// Este for es el del artículo de 1981
+					ReplicatePatern(
+						matrixproduct(RotateVertex, Tr),
+						Layerdiff - 1,
+						"Vertex");
+
+				RotateVertex = matrixproduct(RotateQ, RotateVertex);
+			}*/
+
+			for(j = 0; j < PgonsPerVertex; j++){
+				RotateVertex = matrixproduct(RotateVertex, RotateQ);
+				ReplicatePatern(RotateVertex,
+					Layerdiff - 1,
+					"Vertex");
+			}
+
+			RotateCenter = matrixproduct(RotateCenter, RotateP);		/// Este for, junto con esta línea, están en el artículo de 1986
+
+			}
+		}
+	}
+
+//*******************************************************************************************
+// función principal (la introduzco para poder poner 'return' antes de que acabe)
+
+function main()
+{
+	var
+	RotateCenter,
+	RotateVertex;
+
+	console.log(`main(): p == ${p}`)
+
+	// Le añado un (0,0) a los puntos puesto que cuando llegue a este punto se eligirá el color
+	X.push(0);
+	Y.push(0);
+	Action.push("Black")  // CUA: mejor adoptar política siempre tres 'Push' paralelos
+
+	//ctx.beginPath();
+
+
+
+	if ( X.length != Y.length || X.length != Action.length )
+		throw RangeError(`las longitudes de X/Y/Action no coinciden, están mal definidas`)
+
+	console.log(`X.length == ${X.length}, p == ${p}`)
+
+	const long_X_orig = X.length;
+
+	 // En este caso es únicamente un hexágono lo que estoy haciendo, luego no necesitaré este código
+
+	 /// Añado las rotaciones a los vectores X e Y (y Action)
+	 /*for ( let i = 1; i < p; i++){   // cambiar 'var' por 'let'
+		 for ( let  j = 0; j < long_X_orig; j++){     // CUA usar 'X.length' en lugar de exactamente '6'
+			 let puntoRotado = {x:0, y:0};
+
+			 if (j != long_X_orig - 1)				// Cuando sea Negro, se añade el punto (0,0)
+			 		puntoRotado = rotatePoint(X[j], Y[j], Math.PI / 3 * i, centro0);  // const en lugar de 'var'
+
+			 X.push(puntoRotado.x);
+			 Y.push(puntoRotado.y);
+			 Action.push(Action[j]) ; //  CUA: mejor adoptar política siempre tres 'Push' paralelos
+		 }
+	 }*/
+
+	 DrawPgonPattern(Identity);
+	//return ;
+
+
+
+
+		if (nLayers > 0){					/// Para poder dibujar solo la primera capa (la capa 0)
+		 /*RotateCenter = Identity;
+
+	   for (var i = 0; i < p; i++){
+			Tr = matrixproduct(RotateEdge, RotateCenter);
+			console.log("Matriz a aplicar al ReplicatePatern");
+			console.log(Tr);
+
+			ReplicatePatern(Tr, nLayers - 1, "Edge");
+
+			RotateCenter = matrixproduct(RotateP, RotateCenter);
+			RotateVertex = matrixproduct(RotateQ, RotateP);
+
+			for (var j = 0; j < q - 3; j++){
+					ReplicatePatern(
+						matrixproduct(RotateVertex, Tr),
+						nLayers - 1,
+						"Vertex");
+
+				RotateVertex = matrixproduct(RotateQ, RotateVertex);
+			}
+		}*/											// Artículo de 1981
+
+		RotateCenter = Identity;
+
+		for (let i = 0; i < p; i++){
+			RotateVertex = matrixproduct(RotateCenter, RotateQ);
+
+			ReplicatePatern(RotateVertex, nLayers - 1, "Edge");					// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
+
+			for (let j = 0; j < q - 3; j++){
+				RotateVertex = matrixproduct(RotateVertex, RotateQ);
+				ReplicatePatern(RotateVertex, nLayers - 1, "Vertex");			// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
+			}
+
+			RotateCenter = matrixproduct(RotateCenter, RotateP);				// Artículo de 1986
+		}
+	}
+}
+
+var X = [], Y = [], Action = [];
+
+// Variables numéricas del artículo
+let a = 1 - Math.tan(Math.PI / p) * Math.tan(Math.PI / q),												//// Variable de apoyo
+ 		s = Math.sqrt(a / (2 - a)),																										//// Vértice hiperbólico
+		h = s / a;																																		//// Altura del centro del lado de un polígono
+		r = Math.sqrt(h * h / (Math.cos(Math.PI / p) * Math.cos(Math.PI / p)) - 1);		//// Radio de la circunferencia de un lado de un polígono
+
+//console.log(s);
+X.push(0);
+Y.push(s);
+Action.push("Move");
+
+for (let i = 1; i < p; i++){
+	puntoRotado = rotatePoint(Y[0], X[0], 2 * Math.PI / p * i, centro0);
+	Y.push(puntoRotado.x);
+	X.push(puntoRotado.y);
+	Action.push("Draw");
+}
+
+X.push(0);
+Y.push(s);
+Action.push("Draw");
+
+/*puntoRotado = rotatePoint(Y[0], X[0], 2 * Math.PI / p, centro0);
+Y.push(puntoRotado.x / 2);
+X.push((puntoRotado.y + s) / 2);
+Action.push("Draw");
+
+X.push(0);
+Y.push(0);
+Action.push("Draw");
+
+X.push(0);
+Y.push(s);
+Action.push("Draw");*/
+
+
+//******************************************************************
+// llamada a la función principal
+
+main();
+
+/*ctx.beginPath();
+ctx.arc(400, 450, 5, 0, 2 * Math.PI, false);
+ctx.strokeStyle = 'Green';
+ctx.stroke();
+
+ctx.beginPath();
+ctx.arc(500, 300, 5, 0, 2 * Math.PI, false);
+ctx.strokeStyle = 'Green';
+ctx.stroke();
+
+
+
+/*ctx.beginPath();
+
+for (let i = 0; i < p + 1; i++){
+	var x = linealTransformation(X[i], escala, centro.x);
+	var y = linealTransformation(Y[i], escala, centro.y);
+
+	if (i == 0){
+		ctx.moveTo(x, y);
+	}
+	else {
+		ctx.lineTo(x, y);
+	}
+}
+
+ctx.strokeStyle = "Black";
+ctx.stroke();*/
+
+let c = {x: linealTransformation(h, escala, centro.x), y: linealTransformation(h * Math.tan(Math.PI / p), escala, centro.y)};
+
+// Disco de Poincaré
+ctx.beginPath();
+ctx.arc(centro.x, centro.y, escala, 0, 2 * Math.PI, false);
+ctx.strokeStyle = 'Blue';
+ctx.stroke();
+
+ctx.beginPath();
+ctx.arc(440, 505, 25, 0, 2 * Math.PI, false);
+ctx.strokeStyle = 'Purple';
+ctx.lineWidth = 3;
+ctx.stroke();
+
+ctx.beginPath();
+ctx.arc(385, 415, 25, 0, 2 * Math.PI, false);
+ctx.strokeStyle = 'Purple';
+ctx.lineWidth = 3;
+ctx.stroke();
+
+/*ctx.beginPath();
+ctx.arc(363, 363, 5, 0, 2 * Math.PI, false);
+ctx.strokeStyle = 'Green';
+ctx.stroke();
+
+var circ = new Circunferencia(400, 500, 500, 400, ctx, 1, centro, escala);
+circ.drawable();*/
+
+//puntoRotado2 = rotatePoint(c.x, c.y, 2 * Math.PI / p, centro);
+
+/*let c2x = (c.x + puntoRotado2.x) / 2,
+		c2y = (c.y + puntoRotado2.y) / 2;
+
+let c2 = {x: c2x, y: c2y};*/
+
+/*for (let i = 0; i < p; i++){
+	ctx.beginPath();
+
+	puntoRotado = rotatePoint(c.x, c.y, 2 * Math.PI / p * i, centro);
+	ctx.arc(puntoRotado.x, puntoRotado.y, r * escala, 2 * Math.PI / p * (i + p / 2),  2 * Math.PI / p * (i + p / 2 + 1), false);
+	ctx.strokeStyle = 'Black';
+	ctx.stroke();
+}*/
+
+/*for (let i = 0; i < p; i++){
+	ctx.beginPath();
+
+	puntoRotado = rotatePoint(c2.x, c2.y, 2 * Math.PI / p * i, centro);
+	ctx.arc(puntoRotado.x, puntoRotado.y, r * escala, /*2 * Math.PI / p * (i + p / 2)0,  2 * Math.PI / p * (i + p / 2 + 1), false);
+	ctx.strokeStyle = 'Green';
+	ctx.stroke();
+}*/
+
+
+
+</script>
+</body>
+</html>
