@@ -440,9 +440,7 @@ for (let i = 1; i < p + 1; i++){
 // llamada a la función principal
 
 main();
-
-let c = {x: linealTransformation(h, escala, centro.x), y: linealTransformation(h * Math.tan(Math.PI / p), escala, centro.y)};
-
+		
 // Disco de Poincaré
 ctx.beginPath();
 ctx.arc(centro.x, centro.y, escala, 0, 2 * Math.PI, false);
