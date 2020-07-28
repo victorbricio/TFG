@@ -167,7 +167,7 @@
 
 	//*******************************************************************************************
 
-	function DrawPgonPattern(transformation, Adyacency = "None"){
+	function DrawPgonPattern(transformation){
 		var
 		//SumSquare,
 		Tx, Ty, oldTx, oldTy;
@@ -262,7 +262,7 @@
 		ExposedEdges,
 		PgonsPerVertex;
 
-		DrawPgonPattern(InitialTransformation, Adyacency);
+		DrawPgonPattern(InitialTransformation);
 
 		if (Layerdiff > 0){
 
