@@ -316,7 +316,7 @@ class Circunferencia {
     var res = coeficienteA * this.puntoB.x + coeficienteB * this.puntoB.y + coeficienteC;
 
     // Si se cumple esto será un diámtro, luego la forma de pintarla será así de sencilla
-    if (Math.abs(res) < 0.01){
+    if (Math.abs(res) < 0.0001){
       this.ctx.beginPath();
 
       this.ctx.moveTo(this.puntoA.x, this.puntoA.y);
