@@ -55,7 +55,7 @@ class Circunferencia {
     }
 
     else {
-      for (let t = maxt; t < 2 * Math.PI; t = t + 0.01){
+      for (let t = maxt; t < mint + 2 * Math.PI; t = t + 0.01){
 
         var x = radio * Math.cos(t) + centro.x;
         var y = radio * Math.sin(t) + centro.y;
@@ -68,30 +68,24 @@ class Circunferencia {
           this.ctx.lineTo(x, y);
         }
       }
-
-      for (let t = 0; t < mint; t = t + 0.01){
-
-        var x = radio * Math.cos(t) + centro.x;
-        var y = radio * Math.sin(t) + centro.y;
-
-        this.ctx.lineTo(x, y);
-      }
     }
-
 
 
     this.ctx.strokeStyle = 'Black';
     this.ctx.stroke();
   }
 
+  // Solución mayor de una ecuación de segundo grado
   ecuacion_de_segundo_grado_pos(a, b, c){
     return (- b + Math.sqrt( b * b - 4 * a * c)) / ( 2 * a);
   }
 
+  // Solución mayor de una ecuación de segundo grado
   ecuacion_de_segundo_grado_neg(a, b, c){
     return (- b - Math.sqrt( b * b - 4 * a * c)) / ( 2 * a);
   }
 
+  // Devuelve los puntos de corte entre una recta (determinada por su vector director y un punto) y una circunferencia (determinada por su centro y su radio)
   interseccion_recta_con_circunferencia(vector_recta, punto_recta, centro_circunferencia, radio_circunferencia){
     var coeficienteA = vector_recta.y;
     var coeficienteB = - vector_recta.x;
@@ -145,6 +139,7 @@ class Circunferencia {
     return puntos;
   }
 
+  // Devuelve el punto invertido de punto_a_invertir respecto de la circunferencia determinada por su centro y su radio
   inversion(punto_a_invertir, centro_circunferencia_inversion, radio_circunferencia_inversion){
     var u = centro_circunferencia_inversion.x - punto_a_invertir.x;
     var v = centro_circunferencia_inversion.y - punto_a_invertir.y;
@@ -222,6 +217,7 @@ class Circunferencia {
     return x;
   }
 
+  // Devuelve los puntos de intersección de las rectas tangentes a una circunferencia, desde un punto exterior a la misma
   interseccion_circunferencia_con_circunferencia_a_partir_de_un_punto_exterior_rectas_tangentes(punto_exterior, centro_circunferencia, radio_circunferencia){
     var modulo2 = (((centro_circunferencia.x - punto_exterior.x) / 2) * ((centro_circunferencia.x - punto_exterior.x) / 2) +
                    ((centro_circunferencia.y - punto_exterior.y) / 2) * ((centro_circunferencia.y - punto_exterior.y) / 2));
@@ -272,6 +268,7 @@ class Circunferencia {
     return puntos;
   }
 
+  // Obtiene el centro de la circunferencia que pasa por tres puntos
   circunferencia_a_partir_de_tres_puntos(A, B, C){
     var vector_mediatriz_AB = {x:A.y - B.y, y: B.x - A.x};
     var punto_mediatriz_AB = {x: (A.x + B.x) / 2, y: (A.y + B.y) / 2};
@@ -304,6 +301,7 @@ class Circunferencia {
     return centro_circunferencia;
   }
 
+  // Dibuja la recta hiperbólica que pasa por los puntos this.puntoA y this.puntoB
   createHyperbolicLine(){
     // Aquí compruebo si la recta hiperbólica es un diámetro
     var vector_recta = {x: this.centroPoincare.x - this.puntoA.x, y: this.centroPoincare.y - this.puntoA.y};
