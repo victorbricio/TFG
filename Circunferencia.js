@@ -10,6 +10,7 @@ class Circunferencia {
     this.radioPoincare = radio
   }
 
+  // Obtiene el ángulo con la horizontal que tiene el punto (x,y) en una circunferencia de centro (cx, cy)
   angle(cx, cy, x, y) {
      var dx = x - cx;
      var dy = y - cy;
@@ -20,6 +21,7 @@ class Circunferencia {
      return theta;
    }
 
+  // Pinta una parte de circunferencia con un centro y un radio determinados, solo la parte de menor distancia entre los puntos punto1 y punto2
   draw(centro, radio, punto1, punto2){
     var t1 = this.angle(centro.x, centro.y, punto1.x, punto1.y);
     var t2 = this.angle(centro.x, centro.y, punto2.x, punto2.y);
