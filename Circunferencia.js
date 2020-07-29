@@ -156,7 +156,8 @@ class Circunferencia {
 
     /*var vector_director = {x: u, y: v};
     var x = this.interseccion_recta_con_circunferencia(vector_director, punto_a_invertir, centro_circunferencia_inversion, radio_circunferencia_inversion);
-*/
+    */
+
     if (Math.abs(v) > 0.01){
       var k = centro_circunferencia_inversion.x - centro_circunferencia_inversion.y * u / v;
       var l = k - centro_circunferencia_inversion.x;
@@ -304,56 +305,81 @@ class Circunferencia {
   }
 
   createHyperbolicLine(){
-    // Paso 1
-    var puntoA1prima = this.inversion(this.puntoA, this.centroPoincare, this.radioPoincare);
-    //console.log(puntoA1prima);
+    // Aquí compruebo si la recta hiperbólica es un diámetro
+    var vector_recta = {x: this.centroPoincare.x - this.puntoA.x, y: this.centroPoincare.y - this.puntoA.y};
+    var punto_recta = this.puntoA;
 
-    // Paso 2 y 3
-    var puntos_recta_tangente = this.interseccion_circunferencia_con_circunferencia_a_partir_de_un_punto_exterior_rectas_tangentes(
-                  puntoA1prima, this.centroPoincare, this.radioPoincare);
+    var coeficienteA = vector_recta.y;
+    var coeficienteB = - vector_recta.x;
+    var coeficienteC = vector_recta.x * punto_recta.y - vector_recta.y * punto_recta.x;
 
-    //console.log(puntos_recta_tangente);
+    var res = coeficienteA * this.puntoB.x + coeficienteB * this.puntoB.y + coeficienteC;
 
-    // Paso 4
-    var centro_circunferencia_auxiliar = puntoA1prima;
-    var radio_circunferencia_auxiliar = Math.sqrt((puntos_recta_tangente.x.x - puntoA1prima.x) * (puntos_recta_tangente.x.x - puntoA1prima.x) +
-                                                  (puntos_recta_tangente.x.y - puntoA1prima.y) * (puntos_recta_tangente.x.y - puntoA1prima.y));
-    //console.log(radio_circunferencia_auxiliar);
+    // Si se cumple esto será un diámtro, luego la forma de pintarla será así de sencilla
+    if (Math.abs(res) < 0.01){
+      this.ctx.beginPath();
 
-    // Paso 5
-    var puntoAprima = this.inversion(this.puntoA, centro_circunferencia_auxiliar, radio_circunferencia_auxiliar);
-    var puntoBprima = this.inversion(this.puntoB, centro_circunferencia_auxiliar, radio_circunferencia_auxiliar);
-    //console.log(puntoAprima);
-    //console.log(puntoBprima);
+      this.ctx.moveTo(this.puntoA.x, this.puntoA.y);
+      this.ctx.lineTo(this.puntoB.x, this.puntoB.y);
 
-    // Paso 6
-    var vector_recta_auxiliar = {x: puntoBprima.x - puntoAprima.x, y: puntoBprima.y - puntoAprima.y};
-    var punto_recta_auxiliar = puntoAprima;
+      this.ctx.strokeStyle = 'Black';
+      this.ctx.stroke();
 
-    // Paso 7
-    var puntos_interseccion_recta_circunferencia = this.interseccion_recta_con_circunferencia(
-      vector_recta_auxiliar, punto_recta_auxiliar, this.centroPoincare, this.radioPoincare);
-    //console.log(puntos_interseccion_recta_circunferencia);
+    }
 
-    // Paso 8
-    var puntoCprima = this.inversion(puntos_interseccion_recta_circunferencia.x, centro_circunferencia_auxiliar, radio_circunferencia_auxiliar);
-    //console.log(puntoCprima);
-    var puntoFprima = this.inversion(puntos_interseccion_recta_circunferencia.y, centro_circunferencia_auxiliar, radio_circunferencia_auxiliar);
-    //console.log(puntoFprima);
+    // En cambio, de no ser un diámetro, se vuelve más compleja
+    else {
+      // Paso 1
+      var puntoA1prima = this.inversion(this.puntoA, this.centroPoincare, this.radioPoincare);
+      //console.log(puntoA1prima);
 
-    // Paso 9
-    var centro_recta_hiperbolica = this.circunferencia_a_partir_de_tres_puntos(puntoCprima, this.puntoA, puntoFprima);
-    var radio_recta_hiperbolica = Math.sqrt((centro_recta_hiperbolica.x - this.puntoA.x) * (centro_recta_hiperbolica.x - this.puntoA.x) +
-                                            (centro_recta_hiperbolica.y - this.puntoA.y) * (centro_recta_hiperbolica.y - this.puntoA.y));
+      // Paso 2 y 3
+      var puntos_recta_tangente = this.interseccion_circunferencia_con_circunferencia_a_partir_de_un_punto_exterior_rectas_tangentes(
+                    puntoA1prima, this.centroPoincare, this.radioPoincare);
 
-    if(Math.abs((puntoCprima.x - this.centroPoincare.x) * (puntoCprima.x - this.centroPoincare.x) +
-       (puntoCprima.y - this.centroPoincare.y) * (puntoCprima.y - this.centroPoincare.y) -
-       this.radioPoincare * this.radioPoincare) < 0.01 &&
-       Math.abs((puntoFprima.x - this.centroPoincare.x) * (puntoFprima.x - this.centroPoincare.x) +
-          (puntoFprima.y - this.centroPoincare.y) * (puntoFprima.y - this.centroPoincare.y) -
-          this.radioPoincare * this.radioPoincare) < 0.01){
-      // Pintar la recta hiperbólica
-      this.draw(centro_recta_hiperbolica, radio_recta_hiperbolica, this.puntoA, this.puntoB);
+      //console.log(puntos_recta_tangente);
+
+      // Paso 4
+      var centro_circunferencia_auxiliar = puntoA1prima;
+      var radio_circunferencia_auxiliar = Math.sqrt((puntos_recta_tangente.x.x - puntoA1prima.x) * (puntos_recta_tangente.x.x - puntoA1prima.x) +
+                                                    (puntos_recta_tangente.x.y - puntoA1prima.y) * (puntos_recta_tangente.x.y - puntoA1prima.y));
+      //console.log(radio_circunferencia_auxiliar);
+
+      // Paso 5
+      var puntoAprima = this.inversion(this.puntoA, centro_circunferencia_auxiliar, radio_circunferencia_auxiliar);
+      var puntoBprima = this.inversion(this.puntoB, centro_circunferencia_auxiliar, radio_circunferencia_auxiliar);
+      //console.log(puntoAprima);
+      //console.log(puntoBprima);
+
+      // Paso 6
+      var vector_recta_auxiliar = {x: puntoBprima.x - puntoAprima.x, y: puntoBprima.y - puntoAprima.y};
+      var punto_recta_auxiliar = puntoAprima;
+
+      // Paso 7
+      var puntos_interseccion_recta_circunferencia = this.interseccion_recta_con_circunferencia(
+        vector_recta_auxiliar, punto_recta_auxiliar, this.centroPoincare, this.radioPoincare);
+      //console.log(puntos_interseccion_recta_circunferencia);
+
+      // Paso 8
+      var puntoCprima = this.inversion(puntos_interseccion_recta_circunferencia.x, centro_circunferencia_auxiliar, radio_circunferencia_auxiliar);
+      //console.log(puntoCprima);
+      var puntoFprima = this.inversion(puntos_interseccion_recta_circunferencia.y, centro_circunferencia_auxiliar, radio_circunferencia_auxiliar);
+      //console.log(puntoFprima);
+
+      // Paso 9
+      var centro_recta_hiperbolica = this.circunferencia_a_partir_de_tres_puntos(puntoCprima, this.puntoA, puntoFprima);
+      var radio_recta_hiperbolica = Math.sqrt((centro_recta_hiperbolica.x - this.puntoA.x) * (centro_recta_hiperbolica.x - this.puntoA.x) +
+                                              (centro_recta_hiperbolica.y - this.puntoA.y) * (centro_recta_hiperbolica.y - this.puntoA.y));
+
+      if(Math.abs((puntoCprima.x - this.centroPoincare.x) * (puntoCprima.x - this.centroPoincare.x) +
+         (puntoCprima.y - this.centroPoincare.y) * (puntoCprima.y - this.centroPoincare.y) -
+         this.radioPoincare * this.radioPoincare) < 0.01 &&
+         Math.abs((puntoFprima.x - this.centroPoincare.x) * (puntoFprima.x - this.centroPoincare.x) +
+            (puntoFprima.y - this.centroPoincare.y) * (puntoFprima.y - this.centroPoincare.y) -
+            this.radioPoincare * this.radioPoincare) < 0.01){
+        // Pintar la recta hiperbólica
+        this.draw(centro_recta_hiperbolica, radio_recta_hiperbolica, this.puntoA, this.puntoB);
+      }
     }
   }
 }
