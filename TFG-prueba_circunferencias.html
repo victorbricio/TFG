@@ -30,6 +30,36 @@
 	let p = 6, q = 4, 		// parámetros p y q
 
 	nLayers = 2;			// Capas a dibujar
+		
+	let centro = {x: 600, y: 350},		// Centro de la circunferencia de Poincaré
+	    centro0 = {x: 0, y: 0},		/// Centro de las rotaciones en el origen
+	    escala = 250;
+		
+	 ///
+	 // Definición de los vectores X, Y y Action
+	 ///
+		
+	var X = [], Y = [], Action = [];
+
+	// Variables numéricas del artículo de la construcción de teselacioneshiperbólicas
+	let a = 1 - Math.tan(Math.PI / p) * Math.tan(Math.PI / q),					//// Variable de apoyo
+ 		s = Math.sqrt(a / (2 - a)),								//// Vértice hiperbólico
+		h = s / a;										//// Altura del centro del lado de un polígono
+		r = Math.sqrt(h * h / (Math.cos(Math.PI / p) * Math.cos(Math.PI / p)) - 1);		//// Radio de la circunferencia de un lado de un polígono
+
+	//console.log(s);
+	X.push(0);
+	Y.push(s);
+	Action.push("Move");
+
+	for (let i = 1; i < p + 1; i++){
+		puntoRotado = rotatePoint(Y[0], X[0], 2 * Math.PI / p * i, centro0);
+		Y.push(puntoRotado.x);
+		X.push(puntoRotado.y);
+		Action.push("Draw");
+	}
+		
+		
 
 	let				//// Create ReflectEdgeBisector
 	RB1 = [1,0,0],
@@ -43,6 +73,7 @@
 	let
 	cosh_2b = 2 * cosh_b * cosh_b - 1,
 	sinh_2b = Math.sqrt(cosh_2b * cosh_2b - 1),
+	    
 	RPE1 = [-cosh_2b, 0, sinh_2b],
 	RPE2 = [0, 1, 0],
 	RPE3 = [-sinh_2b, 0, cosh_2b];
@@ -62,17 +93,13 @@
 	//RotateEdge = matrixproduct(ReflectPgonEdge, ReflectEdgeBisector);		// RotateEdge 1981 (este no está en 1986)
 
 
-	 ///
-	 // Definición de los vectores X, Y y Action
-	 ///
-
-	 let /*puntos = {x0: 0/6, y0: 3/6, x1: -2.6/6, y1: 1.5/6,
+	 /*let puntos = {x0: 0/6, y0: 3/6, x1: -2.6/6, y1: 1.5/6,
 		       x2: -2.6/6, y2: -1.5/6, x3: 0/6, y3: -3/6,
-		       x4: 2.6/6, y4: -1.5/6, x5: 2.6/6, y5: 1.5/6},*/
+		       x4: 2.6/6, y4: -1.5/6, x5: 2.6/6, y5: 1.5/6},
 
 	    centro = {x: 600, y: 350},
-			centro0 = {x: 0, y: 0},		/// Centrar las rotaciones en el centro
-	    escala = 250;
+	    centro0 = {x: 0, y: 0},		/// Centrar las rotaciones en el centro
+	    escala = 250;*/
 
 // Enlace de Geogebra para ver los puntos originales
 // https://www.geogebra.org/geometry/wcx98k6u
@@ -156,19 +183,6 @@
 		return elem ;
 	}
 
-	function InArray(element, array){
-		var found = false;
-
-		for (let i = 0; i < array.length; i++){
-			if (array[i] == element ||
-				 (Math.abs(array[i].x1 - element.x2) <= 0.01 && Math.abs(array[i].x2 - element.x1) <= 0.01 &&
-				  Math.abs(array[i].y1 - element.y2) <= 0.01 && Math.abs(array[i].y2 - element.y1) <= 0.01))
-				found = true;
-		}
-
-		return found;
-	}
-
 	//*******************************************************************************************
 
 	function DrawPgonPattern(transformation){
@@ -187,7 +201,6 @@
 
 				Z = matrixproduct(transformation, Z);				/// Desde debajo del if (Action[i] != "Black") está en el artículo de 1981*/
 
-				//let poicareCoordinates = [[X[i]], [Y[i]]];				///
 				let weierstrassCoordinates = [[(2 * X[i]) / (1 - X[i] * X[i] - Y[i] * Y[i])],
 							      [(2 * Y[i]) / (1 - X[i] * X[i] - Y[i] * Y[i])],
 							      [(1 + X[i] * X[i] + Y[i] * Y[i]) / (1 - X[i] * X[i] - Y[i] * Y[i])]];
@@ -284,6 +297,10 @@
 
 				RotateCenter = matrixproduct(InitialTransformation, Rotate2P);		//// Esto está en el artículo de 1986
 			}
+			
+			else {
+				throw RangeError(`Adyacency has an incorrect value`);
+			}
 
 			/*RotateCenter = matrixproduct(							///RotateP * RotateP * InitialTransformation
 				matrixproduct(RotateP, RotateP),					/// Esto está en el artículo de 1981
@@ -341,6 +358,7 @@ function main()
 
 	console.log(`main(): p == ${p}`)
 
+	// Ahora mismo estas tres líneas no son necesarias, puesto que se dibujan las circunferencias con la clase Circunferencia, no desde este archivo
 	// Le añado un (0,0) a los puntos puesto que cuando llegue a este punto se eligirá el color
 	X.push(0);
 	Y.push(0);
@@ -418,27 +436,6 @@ function main()
 		}
 	}
 }
-
-var X = [], Y = [], Action = [];
-
-// Variables numéricas del artículo
-let a = 1 - Math.tan(Math.PI / p) * Math.tan(Math.PI / q),						//// Variable de apoyo
- 		s = Math.sqrt(a / (2 - a)),								//// Vértice hiperbólico
-		h = s / a;										//// Altura del centro del lado de un polígono
-		r = Math.sqrt(h * h / (Math.cos(Math.PI / p) * Math.cos(Math.PI / p)) - 1);		//// Radio de la circunferencia de un lado de un polígono
-
-//console.log(s);
-X.push(0);
-Y.push(s);
-Action.push("Move");
-
-for (let i = 1; i < p + 1; i++){
-	puntoRotado = rotatePoint(Y[0], X[0], 2 * Math.PI / p * i, centro0);
-	Y.push(puntoRotado.x);
-	X.push(puntoRotado.y);
-	Action.push("Draw");
-}
-
 
 //******************************************************************
 // llamada a la función principal
