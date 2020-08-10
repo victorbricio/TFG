@@ -355,7 +355,7 @@ function main()
 
 			ReplicatePatern(RotateVertex, nLayers - 1, "Edge");				// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
 
-			for (let j = 0; j < q - 2; j++){
+			for (let j = 0; j < q - 3; j++){
 				RotateVertex = matrixproduct(RotateVertex, RotateQ);
 				ReplicatePatern(RotateVertex, nLayers - 1, "Vertex");			// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
 			}
