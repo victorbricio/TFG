@@ -192,34 +192,57 @@
 			}
 		return elem ;
 	}
+		
+	// LLeva un punto del disco de Poincaré al modelo de Weierstrass
+	function applyG(x, y){
+		return  [[(2 * x) / (1 - x * x - y * y)],
+			 [(2 * y) / (1 - x * x - y * y)],
+		 	 [(1 + x * x + y * y) / (1 - x * x - y * y)]];
+	}
 
+	// LLeva un punto del modelo de Weierstrass al disco de Poincaré
+	function applyF(x, y, z){
+		return [[x / (1 + z)],
+			[y / (1 + z)]];
+	}
+		
 	//*******************************************************************************************
 
 	function DrawPgonPattern(transformation){
 
 		var
-		Tx, Ty, oldTx, oldTy;
+		Tvertex, oldTvertex, Tcenter;
+		
+		/// Centro del polígono
+		let weierstrassCoordinatesCenter = applyG(centro0.x, centro0.y);
+
+		let TCenter = matrixproduct(transformation, weierstrassCoordinatesCenter);
+
+		Tcenter = applyF(TCenter[0][0], TCenter[1][0], TCenter[2][0]);
+
+		Tcenter[0][0] = linealTransformation(Tcenter[0][0], escala, centro.x);
+		Tcenter[1][0] = linealTransformation(Tcenter[1][0], escala, centro.y);
 
 		for (i = 0; i < Action.length; i++){
-			let weierstrassCoordinates = [[(2 * X[i]) / (1 - X[i] * X[i] - Y[i] * Y[i])],
-						      [(2 * Y[i]) / (1 - X[i] * X[i] - Y[i] * Y[i])],
-						      [(1 + X[i] * X[i] + Y[i] * Y[i]) / (1 - X[i] * X[i] - Y[i] * Y[i])]];
-			let Z = matrixproduct(transformation, weierstrassCoordinates);
+			let weierstrassCoordinates = applyG(X[i], Y[i]);
+				let Z = matrixproduct(transformation, weierstrassCoordinates);
 
-			Tx = Z[0][0] / (1 + Z[2][0]);
-			Ty = Z[1][0] / (1 + Z[2][0]);
+				Tvertex = applyF(Z[0][0], Z[1][0], Z[2][0]);
 
+				Tvertex[0][0] = linealTransformation(Tvertex[0][0], escala, centro.x);
+				Tvertex[1][0] = linealTransformation(Tvertex[1][0], escala, centro.y);
 
-			Tx = linealTransformation(Tx, escala, centro.x);
-			Ty = linealTransformation(Ty, escala, centro.y);
+				if (i != 0){
+					/// Lados del polígono
+					var lineaHiperbolica = new Circunferencia(oldTvertex[0][0], oldTvertex[1][0], Tvertex[0][0], Tvertex[1][0], ctx, centro, escala, "Black", 1);
+					lineaHiperbolica.createHyperbolicLine();
 
-			if (i != 0){
-				var lineaHiperbolica = new Circunferencia(oldTx, oldTy, Tx, Ty, ctx, centro, escala);
-				lineaHiperbolica.createHyperbolicLine();
+					/// Radios del polígono
+					var lineaHiperbolicaCenter = new Circunferencia(Tcenter[0][0], Tcenter[1][0], Tvertex[0][0], Tvertex[1][0], ctx, centro, escala, "#A4A4A4", 1);
+					lineaHiperbolicaCenter.createHyperbolicLine();
 			}
 
-			oldTx = Tx;
-			oldTy = Ty;
+			oldTvertex = Tvertex;
 
 			/*switch(Action[i]){
 				case "Move":
