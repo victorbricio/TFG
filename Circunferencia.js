@@ -1,9 +1,11 @@
 
 class Circunferencia {
-  constructor(a1, b1, a2, b2, ctx, centro, radio){
+  constructor(a1, b1, a2, b2, ctx, centro, radio, color, tamanyo){
     this.puntoA = {x: a1, y: b1};
     this.puntoB = {x: a2, y: b2};
     this.ctx = ctx;
+    this.color = color;
+    this.tamanyo = tamanyo;
 
     // Disco de Poincaré
     this.centroPoincare = centro;
@@ -73,7 +75,8 @@ class Circunferencia {
     }
 
 
-    this.ctx.strokeStyle = 'Black';
+    this.ctx.strokeStyle = this.color;
+    this.ctx.lineWidth = this.tamanyo;
     this.ctx.stroke();
   }
 
@@ -373,7 +376,8 @@ class Circunferencia {
       this.ctx.moveTo(this.puntoA.x, this.puntoA.y);
       this.ctx.lineTo(this.puntoB.x, this.puntoB.y);
 
-      this.ctx.strokeStyle = 'Black';
+      this.ctx.strokeStyle = this.color;
+      this.ctx.lineWidth = this.tamanyo;
       this.ctx.stroke();
 
     }
