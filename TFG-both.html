@@ -365,12 +365,12 @@
 					/// Lados del polígono
 					var lineaHiperbolica = new Circunferencia(oldTvertex[0][0], oldTvertex[1][0], Tvertex[0][0], Tvertex[1][0], ctx,
 						centro, escala, color1, 1);
-					lineaHiperbolica.createHyperbolicLine();
+					lineaHiperbolica.drawHyperbolicLine();
 
 					/// Radios del polígono
 					var lineaHiperbolicaCenter = new Circunferencia(Tcenter[0][0], Tcenter[1][0], Tvertex[0][0], Tvertex[1][0], ctx, centro,
 						escala, "Grey", 1);
-					lineaHiperbolicaCenter.createHyperbolicLine();
+					lineaHiperbolicaCenter.drawHyperbolicLine();
 				}
 
 				oldTvertex = Tvertex;
