@@ -5,41 +5,43 @@
 		h1 {text-align: center;}
 		ol {text-align: center;}
 		p {text-align: center;}
+		#parametros {float: left;}
+		canvas {float: right;}
 </style>
 </head>
 <body>
 
 	<h1> Hyperbolic Tessellations </h1>
 
-	<ol type="i">
-		<li><label for="p">Element p (number of edges the central polygon has):</label>
-		<input type="number" id="p" name="p"></li> <br>
+	<section id=parametros>
+		<ol type="i">
+			<li><label for=p>Element p (number of edges the central polygon has):</label><br>
+			<input type=number id=p name=p value=6 onchange=getTessellation()></li> <br>
 
-		<li><label for="q">Element q (number of polygons at each vertex):</label>
-		<input type="number" id="q" name="q"></li> <br>
+			<li><label for=q>Element q (number of polygons at each vertex):</label><br>
+			<input type=number id=q name=q value=4 onchange=getTessellation()></li> <br>
 
-		<li><label for="n">Number of layers (number of tessellation layers):</label>
-		<input type="number" id="n" name="n"></li> <br>
+			<li><label for=n>Number of layers (number of tessellation layers):</label><br>
+			<input type=number id=n name=n onchange=getTessellation()></li> <br>
 
-		<li><label for="n">Color 1 (use an English name or the hexadecimal code), by default is Red:</label>
-		<input type="text" id="color1" name="color1"></li> <br>
+			<li><label for=color1>Color 1 (use an English name or the hexadecimal code), by default is Red:</label><br>
+			<input type=text id=color1 name=color1 onchange=getTessellation()></li> <br>
 
-		<li><label for="n">Color 2 (use an English name or the hexadecimal code), by default is Purple:</label>
-		<input type="text" id="color2" name="color2"></li> <br>
-	</ol>
+			<li><label for=color2>Color 2 (use an English name or the hexadecimal code), by default is Purple:</label><br>
+			<input type=text id=color2 name=color2 onchange=getTessellation()></li> <br>
+		</ol>
 
-	<p> Choose the kind of border </p>
-	<p><input type="radio" id="boundary" name="border" value="0" checked>
-	<label for="boundary">Boundary</label><br>
-	<input type="radio" id="no boundary" name="border" value="1">
-	<label for="no boundary">No boundary</label><br>
-	<input type="radio" id="both" name="border" value="2">
-	<label for="both">Both</label> <br><br>
-
-	<input type="button" id=create value="Create"></p>
+		<p> Choose the kind of border </p>
+		<p><input type=radio id=boundary name=border value=0 checked onchange=getTessellation()>
+		<label for=boundary>Boundary</label><br>
+		<input type=radio id="no boundary" name=border value=1 onchange=getTessellation()>
+		<label for="no boundary">No boundary</label><br>
+		<input type=radio id=both name=border value=2 onchange=getTessellation()>
+		<label for=both>Both</label> <br><br>
+	</section>
 
 <p>
-<canvas id="canvas1" width="1000" height="700"></canvas></td>
+<canvas id=canvas1 width=700 height=650></canvas></td>
 </p>
 	<script type="text/javascript" src="Circunferencia.js"></script>
 	<script type="text/javascript" src="Complex.js"></script>
@@ -62,21 +64,26 @@
 	RotateEdge,
 	Identity = [[1,0,0], [0,1,0], [0,0,1]];
 
-	var X, Y, X1, Y1, Action;
+		///
+		// Definición de los vectores X, Y y Action
+		// X e Y son para la parte de las fronteras
+		// X1, Y1 y Action son para la parte sin fronteras
+		///
 
-	var color1, color2;
+		var X, Y, X1, Y1, Action;
 
-	elementoHTML("create").addEventListener("click", getTessellation, false);
+		var color1, color2;
+
+		getTessellation();
 
 	function getTessellation(){
-		
-		// Limpieza del canvas y de los vectores
+
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		X = [], Y = [], X1 = [], Y1 = [], Action = [];
 
 		p = elementoHTML('p').value, q = elementoHTML('q').value, 		// parámetros p y q
 
-		nLayers = elementoHTML('n').value;					// Capas a dibujar
+		nLayers = elementoHTML('n').value;			// Capas a dibujar
 
 		if (p == ""){
 			p = 0;
@@ -110,40 +117,60 @@
 			return ;
 		}
 
-		if (nLayers > 5){
-			window.alert("Having a number of layers greater than 5 requieres too many resources, and you will not see any improvement.");
+		if (nLayers > 4){
+			window.alert("With these p and q, having a number of layers greater than 4 requieres too many resources, and you will not see any improvement.");
 			return ;
 		}
 
-		 centro = {x: 500, y: 350},
-		 centro0 = {x: 0, y: 0},		/// Centrar las rotaciones en el centro
-		 escala = 300;
+		if (p > 6 && q > 6 && nLayers > 3){
+			window.alert("With these p and q, having a number of layers greater than 3 requieres too many resources, and you will not see any improvement.");
+			return ;
+		}
 
-		 // Disco de Poincaré
-		 ctx.beginPath();
-		 ctx.arc(centro.x, centro.y, escala, 0, 2 * Math.PI, false);
-		 ctx.strokeStyle = 'Blue';
-		 ctx.stroke();
+		if (p > 8 && q > 8 && nLayers > 2){
+			window.alert("With these p and q, having a number of layers greater than 2 requieres too many resources, and you will not see any improvement.");
+			return ;
+		}
+
+		if (p > 19 && q > 19 && nLayers > 1){
+			window.alert("With these p and q, having a number of layers greater than 1 requieres too many resources, and you will not see any improvement.");
+			return ;
+		}
+
+	 centro = {x: 350, y: 305},
+	 centro0 = {x: 0, y: 0},		/// Centrar las rotaciones en el centro
+	 escala = 300;
+
+	 // Disco de Poincaré
+	 ctx.beginPath();
+	 ctx.arc(centro.x, centro.y, escala, 0, 2 * Math.PI, false);
+	 ctx.strokeStyle = 'Blue';
+	 ctx.stroke();
 
 		if (border == 0 || border == 2){
-			var vertice = verticePoligonoCentral();
+	 		var vertice = verticePoligonoCentral();
 
-			X.push(vertice.x);
-			Y.push(vertice.y);
-			//Action.push("Move");
+	 		X.push(vertice.x);
+	 		Y.push(vertice.y);
 
-			for (let i = 1; i < p + 1; i++){
-				puntoRotado = rotatePoint(Y[0], X[0], 2 * Math.PI / p * i, centro0);
-				Y.push(puntoRotado.x);
-				X.push(puntoRotado.y);
+	 		for (let i = 1; i < p + 1; i++){
+	 			puntoRotado = rotatePoint(Y[0], X[0], 2 * Math.PI / p * i, centro0);
+	 			Y.push(puntoRotado.x);
+	 			X.push(puntoRotado.y);
 			}
 		}
 
 		if (border == 1 || border == 2){
 			let porcentajePequenyo = .1, porcentajeGrande = .8;
 
-			if (p == 3)
+			if (p == 3){
 				porcentajeGrande = 0.65;
+
+				if (q > 8)
+					porcentajeGrande = 0.6;
+				else if (q > 11)
+					porcentajeGrande = 0.5;
+			}
 			else if (p == 4)
 				porcentajeGrande = 0.7;
 			else if (p == 5)
@@ -160,6 +187,9 @@
 			punto1 = rotatePoint(punto1.x, punto1.y, -2 * Math.PI / p / 8, centro0);
 			punto2 = rotatePoint(punto2.x, punto2.y, -2 * Math.PI / p / 8, centro0);
 			punto3 = rotatePoint(punto3.x, punto3.y, 2 * Math.PI / p / 8, centro0);
+			/*console.log(punto1);
+			console.log(punto2);
+			console.log(punto3);*/
 
 			var punto4 = {x: vertice2.x * porcentajePequenyo, y: vertice2.y * porcentajePequenyo};
 			var punto5 = {x: vertice2.x * porcentajeGrande, y: vertice2.y * porcentajeGrande};
@@ -167,6 +197,9 @@
 			punto4 = rotatePoint(punto4.x, punto4.y, 2 * Math.PI / p / 8, centro0);
 			punto5 = rotatePoint(punto5.x, punto5.y, 2 * Math.PI / p / 8, centro0);
 			punto6 = rotatePoint(punto6.x, punto6.y, -2 * Math.PI / p / 8, centro0);
+			/*console.log(punto4);
+			console.log(punto5);
+			console.log(punto6);*/
 
 			X1.push(punto1.x); X1.push(punto2.x); X1.push(punto3.x);
 			X1.push(punto4.x); X1.push(punto5.x); X1.push(punto6.x);
@@ -178,34 +211,34 @@
 		}
 
 
-		let				//// Create ReflectEdgeBisector
-		RB1 = [1,0,0],
-		RB2 = [0,-1,0],
-		RB3 = [0,0,1];
+ 		let				//// Create ReflectEdgeBisector
+ 		RB1 = [1,0,0],
+ 		RB2 = [0,-1,0],
+ 		RB3 = [0,0,1];
 
-		ReflectEdgeBisector = [RB1, RB2, RB3],				//// End creation	/// ReflectQ para 1986
+ 		ReflectEdgeBisector = [RB1, RB2, RB3],				//// End creation	/// ReflectQ para 1986
 
-		cosh_b = Math.cos(Math.PI / q) / Math.sin(Math.PI / p);		//// Create ReflectPgonEdge
+ 		cosh_b = Math.cos(Math.PI / q) / Math.sin(Math.PI / p);		//// Create ReflectPgonEdge
 
-		let
-		cosh_2b = 2 * cosh_b * cosh_b - 1,
-		sinh_2b = Math.sqrt(cosh_2b * cosh_2b - 1),
-		RPE1 = [-cosh_2b, 0, sinh_2b],
-		RPE2 = [0, 1, 0],
-		RPE3 = [-sinh_2b, 0, cosh_2b];
+ 		let
+ 		cosh_2b = 2 * cosh_b * cosh_b - 1,
+ 		sinh_2b = Math.sqrt(cosh_2b * cosh_2b - 1),
+ 		RPE1 = [-cosh_2b, 0, sinh_2b],
+ 		RPE2 = [0, 1, 0],
+ 		RPE3 = [-sinh_2b, 0, cosh_2b];
 
-		ReflectPgonEdge = [RPE1, RPE2, RPE3];				//// End creation	/// ReflectP para el 1986
+ 		ReflectPgonEdge = [RPE1, RPE2, RPE3];				//// End creation	/// ReflectP para el 1986
 
-		let											/// Create ReflectHypotenuse
-		RH1 = [Math.cos(2 * Math.PI / p), Math.sin(2 * Math.PI / p), 0],
-		RH2 = [Math.sin(2 * Math.PI / p), - Math.cos(2 * Math.PI / p), 0],
-		RH3 = [0, 0, 1];
+ 		let											/// Create ReflectHypotenuse
+ 		RH1 = [Math.cos(2 * Math.PI / p), Math.sin(2 * Math.PI / p), 0],
+ 		RH2 = [Math.sin(2 * Math.PI / p), - Math.cos(2 * Math.PI / p), 0],
+ 		RH3 = [0, 0, 1];
 
-		ReflectHypotenuse = [RH1, RH2, RH3];				/// End creation	// Reflect2 para 1986
+ 		ReflectHypotenuse = [RH1, RH2, RH3];				/// End creation	// Reflect2 para 1986
 
 
-		RotateP = matrixproduct(ReflectHypotenuse, ReflectEdgeBisector);		// 2 * Q
-		RotateQ = matrixproduct(ReflectPgonEdge, ReflectHypotenuse);			// P * 2
+ 		RotateP = matrixproduct(ReflectHypotenuse, ReflectEdgeBisector);		// 2 * Q
+ 		RotateQ = matrixproduct(ReflectPgonEdge, ReflectHypotenuse);			// P * 2
 
 		//******************************************************************
 		// llamada a la función principal
@@ -213,7 +246,7 @@
 		main();
 	 }
 
-
+	// Calcula uno de los vértices del polígono central
 	function verticePoligonoCentral(){
 		let sin = Math.sin(Math.PI / p);
 		let cos = Math.cos(Math.PI / q);
@@ -259,52 +292,57 @@
 	function linealTransformation(punto, escala, centro){
 		return punto * escala + centro;
 	}
-		
-		function linealTransformationInverse(punto, escala, centro){
+
+	//**********************************************************************
+	// Hace la homotecia inversa a la anterior
+	function linealTransformationInverse(punto, escala, centro){
 		return (punto - centro) / escala;
 	}
 
-	  function getPoint01(punto, r, c){
-	    var x = linealTransformationInverse(punto.x, r, c.x);
-	    var y = linealTransformationInverse(punto.y, r, c.y);
+	// Obtiene el punto "punto" en el disco de Poincaré de radio 1 y centro (0,0)
+  function getPoint01(punto, r, c){
+    var x = linealTransformationInverse(punto.x, r, c.x);
+    var y = linealTransformationInverse(punto.y, r, c.y);
 
-	    var ret = {x:x, y:y};
+    var ret = {x:x, y:y};
 
-	    return ret;
-	  }
+    return ret;
+  }
 
-	  function MobiusTransformation(z, punto){
-	    var zComp = new Complex(z.x, z.y);
-	    var puntoComp = new Complex(punto.x, punto.y);
-	    var uno = new Complex(1, 0);
+	// Aplica una transformación de Mobius que lleva "punto" al centro del disco de Poincaré
+  function MobiusTransformation(z, punto){
+    var zComp = new Complex(z.x, z.y);
+    var puntoComp = new Complex(punto.x, punto.y);
+    var uno = new Complex(1, 0);
 
-	    var res = div(sub(zComp, puntoComp), sub(uno, prod(conjg(puntoComp), zComp)));
-	    res = {x: res.re(), y: res.im()};
+    var res = div(sub(zComp, puntoComp), sub(uno, prod(conjg(puntoComp), zComp)));
+    res = {x: res.re(), y: res.im()};
 
-	    return res;
-	  }
+    return res;
+  }
 
-	  function MobiusTransformationBack(z, punto){
-	    var zComp = new Complex(z.x, z.y);
-	    var puntoComp = new Complex(punto.x, punto.y);
-	    var uno = new Complex(1, 0);
+	// Aplica la transformación de Mobius inversa a la anterior
+  function MobiusTransformationBack(z, punto){
+    var zComp = new Complex(z.x, z.y);
+    var puntoComp = new Complex(punto.x, punto.y);
+    var uno = new Complex(1, 0);
 
-	    var res = div(add(zComp, puntoComp), add(uno, prod(conjg(puntoComp), zComp)));
-	    res = {x: res.re(), y: res.im()};
+    var res = div(add(zComp, puntoComp), add(uno, prod(conjg(puntoComp), zComp)));
+    res = {x: res.re(), y: res.im()};
 
-	    return res;
-	  }
+    return res;
+  }
 
-		// Obtiene el ángulo con la horizontal que tiene el punto (x,y) en una circunferencia de centro (cx, cy)
-	  function angle(cx, cy, x, y) {
-	     var dx = x - cx;
-	     var dy = y - cy;
-	     var theta = Math.atan2(dy, dx); // range (-PI, PI]
+	// Obtiene el ángulo con la horizontal que tiene el punto (x,y) en una circunferencia de centro (cx, cy)
+  function angle(cx, cy, x, y) {
+     var dx = x - cx;
+     var dy = y - cy;
+     var theta = Math.atan2(dy, dx); // range (-PI, PI]
 
-	     if (theta < 0)
-		theta += 2 * Math.PI
-	     return theta;
-	   }
+     if (theta < 0)
+        theta += 2 * Math.PI
+     return theta;
+   }
 
 	//**********************************************************************
 
@@ -334,7 +372,6 @@
 	//**********************************************************************
 
 	// Supongo que mat1 es 3x3 y mat2 va a ser 3x3 o 3x1
-
 	function matrixproduct( mat1, mat2 )
 	{
 		if (mat2[0].length == 3)
@@ -371,21 +408,23 @@
 	// Lleva un punto del disco de Poincaré al modelo de Weierstrass
 	function applyG(x, y){
 		return  [[(2 * x) / (1 - x * x - y * y)],
-			 [(2 * y) / (1 - x * x - y * y)],
-			 [(1 + x * x + y * y) / (1 - x * x - y * y)]];
+						 [(2 * y) / (1 - x * x - y * y)],
+						 [(1 + x * x + y * y) / (1 - x * x - y * y)]];
 	}
 
 	// LLeva un punto del modelo de Weierstrass al disco de Poincaré
 	function applyF(x, y, z){
 		return [[x / (1 + z)],
-			[y / (1 + z)]];
+						[y / (1 + z)]];
 	}
 
 	//*******************************************************************************************
 
 	function DrawPgonPattern(transformation){
 
-		var Tvertex, oldTvertex, Tcenter;
+		var
+		//SumSquare,
+		Tvertex, oldTvertex, Tcenter;
 
 		/// Centro del polígono
 		let weierstrassCoordinatesCenter = applyG(centro0.x, centro0.y);
@@ -399,28 +438,33 @@
 
 		if (border == 0 || border == 2){
 			for (let i = 0; i < X.length; i++){
-				/// Vertices del polígono
-				let weierstrassCoordinates = applyG(X[i], Y[i]);
-				let Z = matrixproduct(transformation, weierstrassCoordinates);
+					/// Vertices del polígono
+					let weierstrassCoordinates = applyG(X[i], Y[i]);
+					let Z = matrixproduct(transformation, weierstrassCoordinates);
 
-				Tvertex = applyF(Z[0][0], Z[1][0], Z[2][0]);
+					Tvertex = applyF(Z[0][0], Z[1][0], Z[2][0]);
 
-				Tvertex[0][0] = linealTransformation(Tvertex[0][0], escala, centro.x);
-				Tvertex[1][0] = linealTransformation(Tvertex[1][0], escala, centro.y);
+					Tvertex[0][0] = linealTransformation(Tvertex[0][0], escala, centro.x);
+					Tvertex[1][0] = linealTransformation(Tvertex[1][0], escala, centro.y);
 
-				if (i != 0){
-					/// Lados del polígono
-					var lineaHiperbolica = new Circunferencia(oldTvertex[0][0], oldTvertex[1][0], Tvertex[0][0], Tvertex[1][0], ctx,
-						centro, escala, color1, 1);
-					lineaHiperbolica.drawHyperbolicLine();
+					if (i != 0){
+						/// Lados del polígono
+						var lineaHiperbolica = new Circunferencia(oldTvertex[0][0], oldTvertex[1][0], Tvertex[0][0], Tvertex[1][0], ctx,
+							centro, escala, color1, 1);
+						lineaHiperbolica.drawHyperbolicLine();
 
-					/// Radios del polígono
-					var lineaHiperbolicaCenter = new Circunferencia(Tcenter[0][0], Tcenter[1][0], Tvertex[0][0], Tvertex[1][0], ctx, centro,
-						escala, "Grey", 1);
-					lineaHiperbolicaCenter.drawHyperbolicLine();
-				}
+						/// Radios del polígono
+						var lineaHiperbolicaCenter = new Circunferencia(Tcenter[0][0], Tcenter[1][0], Tvertex[0][0], Tvertex[1][0], ctx, centro,
+							escala, "Grey", 1);
+						lineaHiperbolicaCenter.drawHyperbolicLine();
 
-				oldTvertex = Tvertex;
+						/*console.log(oldTx);
+						console.log(oldTy);
+						console.log(Tx);
+						console.log(Ty);*/
+					}
+
+					oldTvertex = Tvertex;
 			}
 		}
 
@@ -448,7 +492,7 @@
 						break;
 
 					default:
-						ctx.strokeStyle = Action[i];
+						ctx.strokeStyle = Action[i];		//Pinta los bordes del polígono
 						ctx.stroke();
 						if (i != X1.length)
 							ctx.beginPath();
@@ -480,7 +524,7 @@
 				ExposedEdges = p - 3;
 				var Rotate3P = matrixproduct(Rotate2P, RotateP);
 
-				RotateCenter = matrixproduct(InitialTransformation, Rotate3P);
+				RotateCenter = matrixproduct(InitialTransformation,	Rotate3P);
 			}
 
 			else if (Adyacency == "Vertex"){
@@ -496,11 +540,7 @@
 			for (i = 0; i < ExposedEdges; i++){
 				RotateVertex = matrixproduct(RotateCenter, RotateQ);
 
-				ReplicatePattern(RotateVertex,
-						Layerdiff - 1,
-						"Edge");
-
-				//RotateCenter = matrixproduct(RotateP, RotateCenter);		/// Esto está en el artículo de 1981
+				ReplicatePattern(RotateVertex, Layerdiff - 1, "Edge");
 
 				if (i < ExposedEdges - 1)					//// El -1 es para compensar que la i empieza en 0
 					PgonsPerVertex = q - 3;
@@ -510,9 +550,7 @@
 
 			for(j = 0; j < PgonsPerVertex; j++){
 				RotateVertex = matrixproduct(RotateVertex, RotateQ);
-				ReplicatePattern(RotateVertex,
-					Layerdiff - 1,
-					"Vertex");
+				ReplicatePattern(RotateVertex, Layerdiff - 1, "Vertex");
 			}
 
 			RotateCenter = matrixproduct(RotateCenter, RotateP);
@@ -530,6 +568,8 @@
 		RotateCenter,
 		RotateVertex;
 
+		//console.log(`X.length == ${X1.length}, p == ${p}`);
+
 		console.log(`main(): p == ${p}`);
 
 		if (border == 1 || border == 2){
@@ -541,43 +581,43 @@
 			const long_X_orig = X1.length;
 
 			if ( X1.length != Y1.length || X1.length != Action.length )
-				throw RangeError(`las longitudes de X/Y/Action no coinciden, están mal definidas`);
+				throw RangeError(`las longitudes de X/Y/Action no coinciden, están mal definidas`)
 
-			 /// Añado las rotaciones a los vectores X e Y (y Action)
-			 for (let i = 1; i < p; i++){ 
-				 for (let j = 0; j < long_X_orig; j++){
-					 let puntoRotado = {x:0, y:0};
 
-					 if (j != long_X_orig - 1)				// Cuando sea color, se añade el punto (0,0)
-							puntoRotado = rotatePoint(X1[j], Y1[j], 2 * Math.PI / p * i, centro0);
+		 /// Añado las rotaciones a los vectores X e Y (y Action)
+		 for (let i = 1; i < p; i++){
+			 for (let j = 0; j < long_X_orig; j++){
+				 let puntoRotado = {x:0, y:0};
 
-					 X1.push(puntoRotado.x);
-					 Y1.push(puntoRotado.y);
-					 Action.push(Action[j]) ;
-				 }
+				 if (j != long_X_orig - 1)				// Cuando sea Negro, se añade el punto (0,0)
+				 		puntoRotado = rotatePoint(X1[j], Y1[j], 2 * Math.PI / p * i, centro0);
+
+				 X1.push(puntoRotado.x);
+				 Y1.push(puntoRotado.y);
+				 Action.push(Action[j]) ;
 			 }
 		 }
-		
-	DrawPgonPattern(Identity);
+	 }
+
+	 console.log(X.length);
+	 console.log(X1.length);
+		 DrawPgonPattern(Identity);
 
 
+			if (nLayers > 0){					/// Para poder dibujar solo la primera capa (la capa 0)
+			RotateCenter = Identity;
 
+			for (let i = 0; i < p; i++){
+				RotateVertex = matrixproduct(RotateCenter, RotateQ);
 
-	if (nLayers > 0){					/// Para poder dibujar solo la primera capa (la capa 0)
+				ReplicatePattern(RotateVertex, nLayers - 1, "Edge");					// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
 
-		RotateCenter = Identity;
+				for (let j = 0; j < q - 3; j++){
+					RotateVertex = matrixproduct(RotateVertex, RotateQ);
+					ReplicatePattern(RotateVertex, nLayers - 1, "Vertex");			// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
+				}
 
-		for (let i = 0; i < p; i++){
-			RotateVertex = matrixproduct(RotateCenter, RotateQ);
-
-			ReplicatePattern(RotateVertex, nLayers - 1, "Edge");				// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
-
-			for (let j = 0; j < q - 3; j++){
-				RotateVertex = matrixproduct(RotateVertex, RotateQ);
-				ReplicatePattern(RotateVertex, nLayers - 1, "Vertex");			// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
-			}
-
-			RotateCenter = matrixproduct(RotateCenter, RotateP);
+				RotateCenter = matrixproduct(RotateCenter, RotateP);
 			}
 		}
 	}
