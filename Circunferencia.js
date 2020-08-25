@@ -1,32 +1,52 @@
 
 class Circunferencia {
-  constructor(a1, b1, a2, b2, ctx, centro, radio, color, tamanyo){
-    this.puntoA = {x: a1, y: b1};
-    this.puntoB = {x: a2, y: b2};
+  constructor(a1, a2, b1, b2, ctx, centro, radio, color, tamanyo){
+    this.puntoA = {x: a1, y: a2};
+    this.puntoB = {x: b1, y: b2};
     this.ctx = ctx;
     this.color = color;
     this.tamanyo = tamanyo;
 
     // Disco de Poincaré
     this.centroPoincare = centro;
-    this.radioPoincare = radio
+    this.radioPoincare = radio;
+
+    this.puntoCprima = {x:-1, y:-1};
+    this.puntoFprima = {x:-1, y:-1};
+
+    this.centro = {x:-1, y:-1};
+    this.radio = 0;
+
+    this.isDiametro = false;
+
+    this.createHyperbolicLine();
   }
 
-  // Obtiene el ángulo con la horizontal que tiene el punto (x,y) en una circunferencia de centro (cx, cy)
-  angle(cx, cy, x, y) {
-     var dx = x - cx;
-     var dy = y - cy;
-     var theta = Math.atan2(dy, dx); // range (-PI, PI]
+  // Devuelve si la recta es un diámetro
+  isDiameter(){
+    return this.isDiametro;
+  }
 
-     if (theta < 0)
-        theta += 2 * Math.PI
-     return theta;
-   }
+  radius(){
+    return this.radio;
+  }
+
+  center(){
+    return this.centro;
+  }
+
+  A(){
+    return this.puntoA;
+  }
+
+  B(){
+    return this.puntoB;
+  }
 
   // Pinta una parte de circunferencia con un centro y un radio determinados, solo la parte de menor distancia entre los puntos punto1 y punto2
   draw(centro, radio, punto1, punto2){
-    var t1 = this.angle(centro.x, centro.y, punto1.x, punto1.y);
-    var t2 = this.angle(centro.x, centro.y, punto2.x, punto2.y);
+    var t1 = angle(centro.x, centro.y, punto1.x, punto1.y);
+    var t2 = angle(centro.x, centro.y, punto2.x, punto2.y);
 
     var maxt, mint;
 
@@ -43,7 +63,8 @@ class Circunferencia {
     this.ctx.beginPath();
 
     if (maxt - mint < Math.PI){
-      for (let t = mint; t < maxt; t = t + 0.01){
+      ctx.arc(centro.x, centro.y, radio, mint, maxt, false);
+      /*for (let t = mint; t < maxt; t = t + 0.01){
 
         var x = radio * Math.cos(t) + centro.x;
         var y = radio * Math.sin(t) + centro.y;
@@ -55,11 +76,12 @@ class Circunferencia {
         else {
           this.ctx.lineTo(x, y);
         }
-      }
+      }*/
     }
 
     else {
-      for (let t = maxt; t < mint + 2 * Math.PI; t = t + 0.01){
+      ctx.arc(centro.x, centro.y, radio, maxt, mint + 2 * Math.PI, false);
+      /*for (let t = maxt; t < mint + 2 * Math.PI; t = t + 0.01){
 
         var x = radio * Math.cos(t) + centro.x;
         var y = radio * Math.sin(t) + centro.y;
@@ -71,7 +93,7 @@ class Circunferencia {
         else {
           this.ctx.lineTo(x, y);
         }
-      }
+      }*/
     }
 
 
@@ -341,8 +363,10 @@ class Circunferencia {
 
     // Paso 8
     var puntoCprima = this.inversion(puntos_interseccion_recta_circunferencia.x, centro_circunferencia_auxiliar, radio_circunferencia_auxiliar);
+    this.puntoCprima = puntoCprima;
     //console.log(puntoCprima);
     var puntoFprima = this.inversion(puntos_interseccion_recta_circunferencia.y, centro_circunferencia_auxiliar, radio_circunferencia_auxiliar);
+    this.puntoFprima = puntoFprima;
     //console.log(puntoFprima);
 
     // Paso 9
@@ -357,20 +381,121 @@ class Circunferencia {
     return circunference;
   }
 
+  createCircunferenceBoundary(){
+    // Obtengo una de las tangentes al borde del disco
+    let vector_recta1 = {x: this.centroPoincare.x - this.puntoA.x, y: this.centroPoincare.y - this.puntoA.y};
+    let vector_recta_tangente1 = {x:vector_recta1.y, y:- vector_recta1.x};
+    let punto_recta1 = this.puntoA;
+
+    // Obtengo la otra de las tangentes al borde del disco
+    let vector_recta2 = {x: this.centroPoincare.x - this.puntoB.x, y: this.centroPoincare.y - this.puntoB.y};
+    let vector_recta_tangente2 = {x:vector_recta2.y, y:- vector_recta2.x};
+    let punto_recta2 = this.puntoB;
+
+    // Obtengo el punto de corte entre las dos rectas anteriores
+    var coeficienteA1 = vector_recta_tangente1.y;
+    var coeficienteB1 = - vector_recta_tangente1.x;
+    var coeficienteC1 = vector_recta_tangente1.x * punto_recta1.y - vector_recta_tangente1.y * punto_recta1.x;
+
+    var coeficienteA2 = vector_recta_tangente2.y;
+    var coeficienteB2 = - vector_recta_tangente2.x;
+    var coeficienteC2 = vector_recta_tangente2.x * punto_recta2.y - vector_recta_tangente2.y * punto_recta2.x;
+
+    let y = (coeficienteA2 * coeficienteC1 / coeficienteA1 - coeficienteC2) /
+            (coeficienteB2 - coeficienteB1 * coeficienteA2 / coeficienteA1);
+
+    let x = (-coeficienteB1 * y - coeficienteC1) / coeficienteA1;
+
+    var centro_recta_hiperbolica = {x:x, y:y};
+    var radio_recta_hiperbolica = Math.sqrt((centro_recta_hiperbolica.x - this.puntoA.x) * (centro_recta_hiperbolica.x - this.puntoA.x) +
+                                            (centro_recta_hiperbolica.y - this.puntoA.y) * (centro_recta_hiperbolica.y - this.puntoA.y));
+
+    var circunference = {centro: centro_recta_hiperbolica, radio: radio_recta_hiperbolica};
+
+    this.puntoCprima = this.puntoA;
+    this.puntoFprima = this.puntoB;
+
+    return circunference;
+  }
+
   // Dibuja la recta hiperbólica que pasa por los puntos this.puntoA y this.puntoB
   createHyperbolicLine(){
     // Aquí compruebo si la recta hiperbólica es un diámetro
-    var vector_recta = {x: this.centroPoincare.x - this.puntoA.x, y: this.centroPoincare.y - this.puntoA.y};
-    var punto_recta = this.puntoA;
+    if (Math.abs(this.centroPoincare.x - this.puntoA.x) > 0.001 &&
+        Math.abs(this.centroPoincare.y - this.puntoA.y) > 0.001){
+      var vector_recta = {x: this.centroPoincare.x - this.puntoA.x, y: this.centroPoincare.y - this.puntoA.y};
+      var punto_recta = this.puntoA;
 
-    var coeficienteA = vector_recta.y;
-    var coeficienteB = - vector_recta.x;
-    var coeficienteC = vector_recta.x * punto_recta.y - vector_recta.y * punto_recta.x;
+      var coeficienteA = vector_recta.y;
+      var coeficienteB = - vector_recta.x;
+      var coeficienteC = vector_recta.x * punto_recta.y - vector_recta.y * punto_recta.x;
 
-    var res = coeficienteA * this.puntoB.x + coeficienteB * this.puntoB.y + coeficienteC;
+      res = coeficienteA * this.puntoB.x + coeficienteB * this.puntoB.y + coeficienteC;
+    }
+
+    else {
+      var vector_recta = {x: this.centroPoincare.x - this.puntoB.x, y: this.centroPoincare.y - this.puntoB.y};
+      var punto_recta = this.puntoB;
+
+      var coeficienteA = vector_recta.y;
+      var coeficienteB = - vector_recta.x;
+      var coeficienteC = vector_recta.x * punto_recta.y - vector_recta.y * punto_recta.x;
+
+      res = coeficienteA * this.puntoA.x + coeficienteB * this.puntoA.y + coeficienteC;
+    }
+
+
 
     // Si se cumple esto será un diámtro, luego la forma de pintarla será así de sencilla
     if (Math.abs(res) < 0.0001){
+      this.isDiametro = true;
+
+      /*this.ctx.beginPath();
+
+      this.ctx.moveTo(this.puntoA.x, this.puntoA.y);
+      this.ctx.lineTo(this.puntoB.x, this.puntoB.y);
+
+      this.ctx.strokeStyle = this.color;
+      this.ctx.lineWidth = this.tamanyo;
+      this.ctx.stroke();*/
+
+      let intersecciones = this.interseccion_recta_con_circunferencia(vector_recta, punto_recta, this.centroPoincare, this.radioPoincare);
+
+      this.puntoCprima = intersecciones.x;
+      this.puntoFprima = intersecciones.y;
+
+      //console.log(vector_recta);
+      //console.log(punto_recta);
+
+      //console.log(this.puntoCprima);
+      //console.log(this.puntoFprima);
+    }
+
+      // En cambio, de no ser un diámetro, se vuelve más compleja
+    else {
+      // Voy a comprobar ahora si los puntos están en el borde del disco
+      var res = (this.puntoA.x - this.centroPoincare.x) * (this.puntoA.x - this.centroPoincare.x) +
+                (this.puntoA.y - this.centroPoincare.y) * (this.puntoA.y - this.centroPoincare.y) -
+                this.radioPoincare * this.radioPoincare;
+
+      // Si están en el borde hay que construir la circunferencia de otra forma
+      if (Math.abs(res) < 0.0001){
+        var circunference = this.createCircunferenceBoundary();
+      }
+
+      else {
+        var circunference = this.createCircunference();
+      }
+
+      this.centro = circunference.centro;
+      this.radio = circunference.radio;
+
+      //this.draw(circunference.centro, circunference.radio, this.puntoA, this.puntoB);
+    }
+  }
+
+  drawHyperbolicLine(){
+    if (this.isDiametro){
       this.ctx.beginPath();
 
       this.ctx.moveTo(this.puntoA.x, this.puntoA.y);
@@ -379,14 +504,44 @@ class Circunferencia {
       this.ctx.strokeStyle = this.color;
       this.ctx.lineWidth = this.tamanyo;
       this.ctx.stroke();
-
     }
 
-    // En cambio, de no ser un diámetro, se vuelve más compleja
     else {
-      var circunference = this.createCircunference();
-
-      this.draw(circunference.centro, circunference.radio, this.puntoA, this.puntoB);
+      this.draw(this.centro, this.radio, this.puntoA, this.puntoB);
     }
+  }
+
+  perpendicular(puntoComun){
+    let inicio = MobiusTransformation(getPoint01(this.puntoCprima, this.radioPoincare, this.centroPoincare), puntoComun);
+    let fin = MobiusTransformation(getPoint01(this.puntoFprima, this.radioPoincare, this.centroPoincare), puntoComun);
+
+    let vector_director = {x:fin.x - inicio.x , y:fin.y - inicio.y};
+    let vector_perpendicular = {x: vector_director.y, y: - vector_director.x};
+
+
+    let intersecciones = this.interseccion_recta_con_circunferencia(vector_perpendicular,
+                              this.centroPoincare, this.centroPoincare, this.radioPoincare);
+
+    console.log(this.puntoCprima);
+    console.log(this.puntoFprima);
+    console.log(inicio);
+    console.log(fin);
+    console.log(puntoComun);
+
+    let nuevoInicio = getPoint01(intersecciones.x, this.radioPoincare, this.centroPoincare);
+    let nuevoFin = getPoint01(intersecciones.y, this.radioPoincare, this.centroPoincare);
+
+    let inicioPerpendicular = MobiusTransformationBack(nuevoInicio, puntoComun);
+    let finPerpendicular = MobiusTransformationBack(nuevoFin, puntoComun);
+
+    inicioPerpendicular = {x: linealTransformation(inicioPerpendicular.x, this.radioPoincare, this.centroPoincare.x),
+                           y: linealTransformation(inicioPerpendicular.y, this.radioPoincare, this.centroPoincare.y)};
+
+    finPerpendicular = {x: linealTransformation(finPerpendicular.x, this.radioPoincare, this.centroPoincare.x),
+                        y: linealTransformation(finPerpendicular.y, this.radioPoincare, this.centroPoincare.y)};
+
+
+    return new Circunferencia(inicioPerpendicular.x, inicioPerpendicular.y, finPerpendicular.x, finPerpendicular.y, this.ctx,
+                              this.centroPoincare, this.radioPoincare, this.color, this.tamanyo);
   }
 }
