@@ -42,6 +42,7 @@
 <canvas id="canvas1" width="1000" height="700"></canvas></td>
 </p>
 	<script type="text/javascript" src="Circunferencia.js"></script>
+	<script type="text/javascript" src="Complex.js"></script>
 	<script type="text/javascript" id="fuente">
 
 	let p, q, nLayers, border;
@@ -258,6 +259,52 @@
 	function linealTransformation(punto, escala, centro){
 		return punto * escala + centro;
 	}
+		
+		function linealTransformationInverse(punto, escala, centro){
+		return (punto - centro) / escala;
+	}
+
+	  function getPoint01(punto, r, c){
+	    var x = linealTransformationInverse(punto.x, r, c.x);
+	    var y = linealTransformationInverse(punto.y, r, c.y);
+
+	    var ret = {x:x, y:y};
+
+	    return ret;
+	  }
+
+	  function MobiusTransformation(z, punto){
+	    var zComp = new Complex(z.x, z.y);
+	    var puntoComp = new Complex(punto.x, punto.y);
+	    var uno = new Complex(1, 0);
+
+	    var res = div(sub(zComp, puntoComp), sub(uno, prod(conjg(puntoComp), zComp)));
+	    res = {x: res.re(), y: res.im()};
+
+	    return res;
+	  }
+
+	  function MobiusTransformationBack(z, punto){
+	    var zComp = new Complex(z.x, z.y);
+	    var puntoComp = new Complex(punto.x, punto.y);
+	    var uno = new Complex(1, 0);
+
+	    var res = div(add(zComp, puntoComp), add(uno, prod(conjg(puntoComp), zComp)));
+	    res = {x: res.re(), y: res.im()};
+
+	    return res;
+	  }
+
+		// Obtiene el ángulo con la horizontal que tiene el punto (x,y) en una circunferencia de centro (cx, cy)
+	  function angle(cx, cy, x, y) {
+	     var dx = x - cx;
+	     var dy = y - cy;
+	     var theta = Math.atan2(dy, dx); // range (-PI, PI]
+
+	     if (theta < 0)
+		theta += 2 * Math.PI
+	     return theta;
+	   }
 
 	//**********************************************************************
 
