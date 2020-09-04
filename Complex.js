@@ -34,3 +34,11 @@ function div(z1, z2) {
 
   return new Complex(numerador.re() / denominador, numerador.im() / denominador);
 }
+
+function abs(z) {
+  return Math.sqrt(z.re() * z.re() + z.im() * z.im());
+}
+
+function exp(alpha){
+  return new Complex (Math.cos(alpha), Math.sin(alpha));
+}
