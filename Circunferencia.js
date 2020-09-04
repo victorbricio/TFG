@@ -43,6 +43,14 @@ class Circunferencia {
     return this.puntoB;
   }
 
+  CPrima(){
+    return this.puntoCprima;
+  }
+
+  FPrima(){
+    return this.puntoFprima;
+  }
+
   // Pinta una parte de circunferencia con un centro y un radio determinados, solo la parte de menor distancia entre los puntos punto1 y punto2
   draw(centro, radio, punto1, punto2){
     var t1 = angle(centro.x, centro.y, punto1.x, punto1.y);
@@ -192,7 +200,7 @@ class Circunferencia {
     return circunference;
   }
 
-  // Dibuja la recta hiperbólica que pasa por los puntos this.puntoA y this.puntoB
+  // Crea la recta hiperbólica que pasa por los puntos this.puntoA y this.puntoB
   createHyperbolicLine(){
     // Aquí compruebo si la recta hiperbólica es un diámetro
     if (Math.abs(this.centroPoincare.x - this.puntoA.x) > 0.001 &&
@@ -224,15 +232,6 @@ class Circunferencia {
     if (Math.abs(res) < 0.0001){
       this.isDiametro = true;
 
-      /*this.ctx.beginPath();
-
-      this.ctx.moveTo(this.puntoA.x, this.puntoA.y);
-      this.ctx.lineTo(this.puntoB.x, this.puntoB.y);
-
-      this.ctx.strokeStyle = this.color;
-      this.ctx.lineWidth = this.tamanyo;
-      this.ctx.stroke();*/
-
       let intersecciones = interseccion_recta_con_circunferencia(vector_recta, punto_recta, this.centroPoincare, this.radioPoincare);
 
       this.puntoCprima = intersecciones.x;
@@ -263,11 +262,10 @@ class Circunferencia {
 
       this.centro = circunference.centro;
       this.radio = circunference.radio;
-
-      //this.draw(circunference.centro, circunference.radio, this.puntoA, this.puntoB);
     }
   }
 
+  // Dibuja la recta hiperbólica que pasa por los puntos this.puntoA y this.puntoB
   drawHyperbolicLine(){
     if (this.isDiametro){
       this.ctx.beginPath();
@@ -286,31 +284,114 @@ class Circunferencia {
   }
 
   perpendicular(puntoComun){
-    let inicio = MobiusTransformation(getPoint01(this.puntoCprima, this.radioPoincare, this.centroPoincare), puntoComun);
-    let fin = MobiusTransformation(getPoint01(this.puntoFprima, this.radioPoincare, this.centroPoincare), puntoComun);
+    let inicioPerpendicular = {x: -1, y: -1};
+    let finPerpendicular = {x: -1, y: -1};
 
-    let vector_director = {x:fin.x - inicio.x , y:fin.y - inicio.y};
-    let vector_perpendicular = {x: vector_director.y, y: - vector_director.x};
+    if (this.isDiametro && Math.abs(puntoComun.x - this.centroPoincare.x) < 0.01 && Math.abs(puntoComun.y - this.centroPoincare.y) < 0.01 ){
+      let vector_director = {x:this.puntoFprima.x - this.puntoCprima.x , y:this.puntoFprima.y - this.puntoCprima.y};
+      let vector_perpendicular = {x: vector_director.y, y: - vector_director.x};
 
 
-    let intersecciones = interseccion_recta_con_circunferencia(vector_perpendicular,
-                              this.centroPoincare, this.centroPoincare, this.radioPoincare);
+      let intersecciones = interseccion_recta_con_circunferencia(vector_perpendicular,
+                                this.centroPoincare, this.centroPoincare, this.radioPoincare);
+      inicioPerpendicular = {x: intersecciones.x.x, y: intersecciones.x.y};
+      finPerpendicular = {x: intersecciones.y.x, y: intersecciones.y.y};
+    }
 
-    let nuevoInicio = getPoint01(intersecciones.x, this.radioPoincare, this.centroPoincare);
-    let nuevoFin = getPoint01(intersecciones.y, this.radioPoincare, this.centroPoincare);
+    else {
+      let inicio = MobiusTransformation(getPoint01(this.puntoCprima, this.radioPoincare, this.centroPoincare), puntoComun);
+      let fin = MobiusTransformation(getPoint01(this.puntoFprima, this.radioPoincare, this.centroPoincare), puntoComun);
 
-    let inicioPerpendicular = MobiusTransformationBack(nuevoInicio, puntoComun);
-    let finPerpendicular = MobiusTransformationBack(nuevoFin, puntoComun);
+      let vector_director = {x:fin.x - inicio.x , y:fin.y - inicio.y};
+      let vector_perpendicular = {x: vector_director.y, y: - vector_director.x};
 
-    inicioPerpendicular = {x: linealTransformation(inicioPerpendicular.x, this.radioPoincare, this.centroPoincare.x),
-                           y: linealTransformation(inicioPerpendicular.y, this.radioPoincare, this.centroPoincare.y)};
 
-    finPerpendicular = {x: linealTransformation(finPerpendicular.x, this.radioPoincare, this.centroPoincare.x),
-                        y: linealTransformation(finPerpendicular.y, this.radioPoincare, this.centroPoincare.y)};
+      let intersecciones = interseccion_recta_con_circunferencia(vector_perpendicular,
+                                this.centroPoincare, this.centroPoincare, this.radioPoincare);
 
+      let nuevoInicio = getPoint01(intersecciones.x, this.radioPoincare, this.centroPoincare);
+      let nuevoFin = getPoint01(intersecciones.y, this.radioPoincare, this.centroPoincare);
+
+      inicioPerpendicular = MobiusTransformationBack(nuevoInicio, puntoComun);
+      finPerpendicular = MobiusTransformationBack(nuevoFin, puntoComun);
+
+      inicioPerpendicular = {x: linealTransformation(inicioPerpendicular.x, this.radioPoincare, this.centroPoincare.x),
+                             y: linealTransformation(inicioPerpendicular.y, this.radioPoincare, this.centroPoincare.y)};
+
+      finPerpendicular = {x: linealTransformation(finPerpendicular.x, this.radioPoincare, this.centroPoincare.x),
+                          y: linealTransformation(finPerpendicular.y, this.radioPoincare, this.centroPoincare.y)};
+    }
 
     return new Circunferencia(inicioPerpendicular.x, inicioPerpendicular.y, finPerpendicular.x, finPerpendicular.y, this.ctx,
                               this.centroPoincare, this.radioPoincare, this.color, this.tamanyo);
+  }
+
+  seSaleDelToroPI5(puntoActual){
+    let puntos, seSale = [];
+
+    for (let i = 0; i < identificaciones.length; i++) {
+      if(this.isDiametro){
+        let vector_actual = {x:this.puntoB.x - this.puntoA.x,
+														 y:this.puntoB.y - this.puntoA.y};
+
+        puntos = interseccion_recta_con_circunferencia(vector_actual, this.puntoB,
+																											 identificaciones[i].centro, identificaciones[i].radio);
+      }
+
+      else {
+        puntos = interseccion_circunferencia_con_circunferencia(this.centro, this.radio,
+																																identificaciones[i].centro, identificaciones[i].radio);
+      }
+
+      if (puntos.x != undefined){
+        let modX2 = (puntos.x.x - puntoActual.x) * (puntos.x.x - puntoActual.x) + (puntos.x.y - puntoActual.y) * (puntos.x.y - puntoActual.y);
+        let modY2 = (puntos.y.x - puntoActual.x) * (puntos.y.x - puntoActual.x) + (puntos.y.y - puntoActual.y) * (puntos.y.y - puntoActual.y);
+        let modMax;
+
+        if (modX2 > modY2){
+          modMax = modX2;
+        }
+
+        else {
+          modMax = modY2;
+        }
+
+        let punto_interseccion;
+
+        if (modMax == modX2){
+          punto_interseccion = puntos.y;
+        }
+
+        else {
+          punto_interseccion = puntos.x;
+        }
+
+        let modActual2 = (this.centroPoincare.x - puntoActual.x) * (this.centroPoincare.x - puntoActual.x) +
+                         (this.centroPoincare.y - puntoActual.y) * (this.centroPoincare.y - puntoActual.y);
+        let modInterseccion2 = (this.centroPoincare.x - punto_interseccion.x) * (this.centroPoincare.x - punto_interseccion.x) +
+                               (this.centroPoincare.y - punto_interseccion.y) * (this.centroPoincare.y - punto_interseccion.y);
+        let modControl = (puntoActual.x - punto_interseccion.x) * (puntoActual.x - punto_interseccion.x) +
+                         (puntoActual.y - punto_interseccion.y) * (puntoActual.y - punto_interseccion.y);
+
+        if (modActual2 > modInterseccion2 + 5){
+          modMax = modActual2;
+        }
+
+        else {
+          modMax = modInterseccion2;
+        }
+
+        if (modMax == modActual2){
+          if (modControl < 50){
+            let dondeSale = {lado:i, punto_interseccion: punto_interseccion};
+            seSale.push(dondeSale);
+          }
+        }
+      }
+
+    }
+
+    return seSale;
   }
 }
 
@@ -319,16 +400,6 @@ function interseccion_recta_con_circunferencia(vector_recta, punto_recta, centro
   var coeficienteA = vector_recta.y;
   var coeficienteB = - vector_recta.x;
   var coeficienteC = vector_recta.x * punto_recta.y - vector_recta.y * punto_recta.x;
-
-  let l = {x:800, y:350};
-
-  /*if (Math.abs(punto_recta.x - l.x) < 0.01 ){
-    console.log(vector_recta);
-    console.log(punto_recta);
-    console.log(centro_circunferencia);
-    console.log(radio_circunferencia);
-    console.log(coeficienteC);
-  }*/
 
   if (Math.abs(coeficienteA) > 0.01){
     var t = - coeficienteC - centro_circunferencia.x * coeficienteA;
