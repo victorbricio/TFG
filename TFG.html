@@ -32,55 +32,38 @@
 	RotateQ,
 	RotateEdge,
 	Identity = [[1,0,0], [0,1,0], [0,0,1]];
-	/*Tr,
-	RotateCenter,
-	RotateVertex;*/
 
-		 ///
+		///
 		// Definición de los vectores X, Y y Action
 		///
 
 		var X, Y, X1, Y1, Action;
 
-		var color1, color2, border = 0;
+		var color1, color2;
 
-		var rectaActual, puntoActual, puntoAnterior, sentido = 1;
+		let rectaActual, circunferenceActual, circunferenceActual2, puntoActual, puntoFlecha;
+		let sentido = -1;
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		X = [], Y = [], X1 = [], Y1 = [], Action = [];
-		//rectaActual = undefined, puntoActual = undefined;
 
 		p = 10, q = 5, 		// parámetros p y q
 
 		nLayers = 0;			// Capas a dibujar
 
-	 centro = {x: 500, y: 350},
+	 centro = {x: 500, y: 325},
 	 centro0 = {x: 0, y: 0},		/// Centrar las rotaciones en el centro
 	 escala = 300;
 
-	 		// Variables numéricas del artículo
-	 		/*let a = 1 - Math.tan(Math.PI / p) * Math.tan(Math.PI / q),												//// Variable de apoyo
-	 			 	s = Math.sqrt(a / (2 - a)),																											//// Vértice hiperbólico
-	 				h = s / a,																																			//// Altura del centro del lado de un polígono
-	 				r = Math.sqrt(h * h / ((Math.cos(Math.PI / p) * Math.cos(Math.PI / p))) - 1);		//// Radio de la circunferencia de un lado de un polígono
+ 		var vertice = verticePoligonoCentral();
 
-	 		//console.log(s);
-	 		X.push(0);
-	 		Y.push(s);*/
+ 		X.push(vertice.x);
+ 		Y.push(vertice.y);
 
-		if (border == 0 || border == 2){
-	 		var vertice = verticePoligonoCentral();
-
-	 		X.push(vertice.x);
-	 		Y.push(vertice.y);
-	 		//Action.push("Move");
-
-	 		for (let i = 1; i < p + 1; i++){
-	 			puntoRotado = rotatePoint(Y[0], X[0], 2 * Math.PI / p * i, centro0);
-	 			Y.push(puntoRotado.x);
-	 			X.push(puntoRotado.y);
-	 			//Action.push("Draw");
-			}
+ 		for (let i = 1; i < p + 1; i++){
+ 			puntoRotado = rotatePoint(Y[0], X[0], 2 * Math.PI / p * i, centro0);
+ 			Y.push(puntoRotado.x);
+ 			X.push(puntoRotado.y);
 		}
 
  		let				//// Create ReflectEdgeBisector
@@ -110,34 +93,67 @@
 
 
  		RotateP = matrixproduct(ReflectHypotenuse, ReflectEdgeBisector);		// 2 * Q
- 		RotateQ = matrixproduct(ReflectPgonEdge, ReflectHypotenuse);			// P * 2
- 		//RotateEdge = matrixproduct(ReflectPgonEdge, ReflectEdgeBisector);		// RotateEdge 1981 (este no está en 1986)
+ 		RotateQ = matrixproduct(ReflectPgonEdge, ReflectHypotenuse);				// P * 2
 
-		//******************************************************************
-		// llamada a la función principal
-
-		//main();
 
 		const board_border = 'black';
 		const board_background = "white";
-		const snake_col = 'lightblue';
-		const snake_border = 'darkblue';
 
 		let paso = 0.04;
-		let changing_direction = false;
 		let puntoActualPoincare;
 		let cambio = false;
+		let tamanyo_flecha = 0.16;
+		let tamanyo_cabeza_flecha = .5;
+		let milisegundos_por_movimiento = 150;
 
-		let snake = [{x: centro.x, y: centro.y},  {x: centro.x - 10, y: centro.y},
-								 {x: centro.x - 20, y: centro.y},  {x: centro.x - 30, y: centro.y}];
+		let linea1 = {centro: {x:824.6, y:325}, radio: 124, a: {x:724.3, y:397.9}, b: {x:724.3, y:252.2}};
+		let linea2 = {centro: {x:762.6, y:134.2}, radio: 124, a: {x:724.3, y:252.1}, b: {x:638.6, y:134.2}};
+		let linea3 = {centro: {x:600.3, y:16.3}, radio: 124, a: {x:638.6, y:134.2}, b: {x:500, y:89.2}};
+		let linea4 = {centro: {x:399.7, y:16.3}, radio: 124, a: {x:500, y:89.2}, b: {x:361.4, y:134.2}};
+		let linea5 = {centro: {x:237.4, y:134.2}, radio: 124, a: {x:361.4, y:134.2}, b: {x:275.7, y:252.1}};
+		let linea6 = {centro: {x:175.4, y:325}, radio: 124, a: {x:275.7, y:397.9}, b: {x:275.7, y:252.1}};
+		let linea7 = {centro: {x:237.4, y:515.8}, radio: 124, a: {x:275.7, y:397.9}, b: {x:361.4, y:515.8}};
+		let linea8 = {centro: {x:400.7, y:633.7}, radio: 124, a: {x:361.4, y:515.8}, b: {x:500, y:560.8}};
+		let linea9 = {centro: {x:600.3, y:633.7}, radio: 124, a: {x:500, y:560.8}, b: {x:638.6, y:515.8}};
+		let linea10 = {centro: {x:762.6, y:515.8}, radio: 124, a: {x:638.6, y:515.8}, b: {x:724.3, y:397.9}};
+
+		let identificaciones = [];
+    identificaciones.push(linea1);
+    identificaciones.push(linea2);
+    identificaciones.push(linea3);
+    identificaciones.push(linea4);
+    identificaciones.push(linea5);
+    identificaciones.push(linea6);
+    identificaciones.push(linea7);
+    identificaciones.push(linea8);
+    identificaciones.push(linea9);
+    identificaciones.push(linea10);
+
+		let v = verticePoligonoCentral();
+
+		v = {x: linealTransformation(v.x, escala, centro.x), y: linealTransformation(v.y, escala, centro.y)}
+
+		let vertices = [];
+
+		for (var i = 0; i < p; i++) {
+			vertices.push(rotatePoint(v.x, v.y, 2 * Math.PI / p * i, centro))
+		}
+
+		var radioObjeto = 190;
+		var omega = Math.random() * Math.PI*2;
+		radioObjeto = Math.random() * 140 + 50;
+
+		xObjeto = Math.cos(omega) * radioObjeto + centro.x;
+		yObjeto = Math.sin(omega) * radioObjeto + centro.y;
+
+		let reload = false;
 
 		if (rectaActual == undefined){
-			rectaActual = new Circunferencia(centro.x + escala, centro.y, centro.x - escala, centro.y, ctx, centro, escala, "Black", 1);
+			rectaActual = new Circunferencia(centro.x + escala, centro.y, centro.x - escala, centro.y, ctx, centro, escala, "#0174DF", 1);
 		}
 
 		if (puntoActual == undefined){
 			puntoActual = centro;
-			puntoAnterior = centro;
 		}
 
 		main2();
@@ -145,15 +161,10 @@
 		document.addEventListener("keydown", change_direction);
 
 		function main2() {
-				changing_direction = false;
-        setTimeout(function onTick() {
+        setInterval(function onTick() {
         clearCanvas();
         move_snake();
-        drawSnake();
-				//console.log(puntoActual);
-        // Call main again
-        main2();
-      }, 400);
+      }, milisegundos_por_movimiento);
     }
 
 		// draw a border around the canvas
@@ -170,52 +181,60 @@
 			main();
 
 			rectaActual.drawHyperbolicLine();
-			puntoActualPoincare = {x: linealTransformationInverse(puntoActual.x, escala, centro.x),
-														 y: linealTransformationInverse(puntoActual.y, escala, centro.y)};
-			rectaActual.perpendicular(puntoActualPoincare).drawHyperbolicLine();
-		}
 
-		// Draw the snake on the canvas
-		function drawSnake() {
-		  // Draw each part
-		  snake.forEach(drawSnakePart);
-		}
+			circunferenceActual = makeHyperbolicCircunference(puntoActual, paso, centro, escala);
+			circunferenceActual.radio *= escala;
 
-		// Draw one snake part
-		function drawSnakePart(snakePart) {
+			circunferenceActualFlecha = makeHyperbolicCircunference(puntoActual, tamanyo_flecha, centro, escala);
+			circunferenceActualFlecha.radio *= escala;
 
-		  // Set the colour of the snake part
-		  ctx.fillStyle = snake_col;
-		  // Set the border colour of the snake part
-		  ctx.strokestyle = snake_border;
-		  // Draw a "filled" rectangle to represent the snake part at the coordinates
-		  // the part is located
-		  ctx.fillRect(snakePart.x, snakePart.y, 10, 10);
-		  // Draw a border around the snake part
-		  ctx.strokeRect(snakePart.x, snakePart.y, 10, 10);
+			ctx.beginPath();
+			ctx.arc(xObjeto, yObjeto, 8, 0, 2 * Math.PI, false);
+			ctx.strokeStyle = 'Black';
+			ctx.stroke();
+
+			/*let linea1 = new Circunferencia (724.3, 397.9, 638.6, 515.8, ctx, centro, escala, "Green", 1);
+			linea1.drawHyperbolicLine();
+			console.log(linea1.center());
+			console.log(linea1.radius());
+
+			ctx.beginPath();
+			ctx.arc(circunferenceActual2.centro.x, circunferenceActual2.centro.y, circunferenceActual2.radio, 0, 2 * Math.PI, false);
+			ctx.strokeStyle = 'Orange';
+			ctx.stroke();*/
 		}
 
 		function move_snake() {
-			var xCoor, yCoor, t;
+			var xCoor, yCoor, xG, yG;
 
-			if (rectaActual.isDiameter()){
-				let vector_actual = {x:rectaActual.B().x - rectaActual.A().x,
-														 y:rectaActual.B().y - rectaActual.A().y};
+			let modObjeto = (puntoActual.x - xObjeto) * (puntoActual.x - xObjeto) + (puntoActual.y - yObjeto) * (puntoActual.y - yObjeto);
 
-				let circunferenceAux = makeHyperbolicCircunference(puntoActual, paso, centro, escala);
- 				circunferenceAux.radio *= escala;
+			if (modObjeto <= 64 && !reload){
+				window.alert("You won, congrats!!");
+				reload = true;
+				window.location.reload(true);
+				return ;
+			}
 
-				ctx.beginPath();
-	   	  ctx.arc(circunferenceAux.centro.x, circunferenceAux.centro.y, circunferenceAux.radio, 0, 2 * Math.PI, false);
-	   	  ctx.strokeStyle = 'Purple';
-	   	  ctx.stroke();
+			let seSale = rectaActual.seSaleDelToroPI5(puntoActual);
 
-				let puntos = interseccion_recta_con_circunferencia(vector_actual, rectaActual.A(), circunferenceAux.centro, circunferenceAux.radio);
-
-				let t1 = (puntos.x.x - rectaActual.A().x) / vector_actual.x;
-				let t2 = (puntos.y.x - rectaActual.A().x) / vector_actual.x;
+			if (seSale.length != 0){
+				let tActual = angle(identificaciones[seSale[0].lado].centro.x, identificaciones[seSale[0].lado].centro.y,
+														seSale[0].punto_interseccion.x, seSale[0].punto_interseccion.y);
+				let t1 = angle(identificaciones[seSale[0].lado].centro.x, identificaciones[seSale[0].lado].centro.y,
+											 identificaciones[seSale[0].lado].a.x, identificaciones[seSale[0].lado].a.y);
+			  let t2 = angle(identificaciones[seSale[0].lado].centro.x, identificaciones[seSale[0].lado].centro.y,
+											 identificaciones[seSale[0].lado].b.x, identificaciones[seSale[0].lado].b.y);
 
 				let tmax, tmin;
+
+				if (t1 - t2 > Math.PI){
+					t2 += 2 * Math.PI;
+				}
+
+				if (t2 - t1 > Math.PI){
+					t1 += 2 * Math.PI;
+				}
 
 				if (t1 > t2){
 					tmax = t1;
@@ -227,100 +246,454 @@
 					tmin = t1;
 				}
 
-				if ((sentido == 1 /*&& tmax == t1) || (sentido == -1 && tmax == t2*/)){
-					xCoor = puntos.x.x;
-					yCoor = puntos.x.y;
+				tActual = (tActual - tmin) / (tmax - tmin);
+
+				let nuevo_lado;
+
+				if (seSale[0].lado == 0){
+					nuevo_lado = 3;
+				}
+
+				else if (seSale[0].lado == 1){
+					nuevo_lado = 8;
+				}
+
+				else if (seSale[0].lado == 2){
+					nuevo_lado = 5;
+				}
+
+				else if (seSale[0].lado == 3){
+					nuevo_lado = 0;
+				}
+
+				else if (seSale[0].lado == 4){
+					nuevo_lado = 7;
+				}
+
+				else if (seSale[0].lado == 5){
+					nuevo_lado = 2;
+				}
+
+				else if (seSale[0].lado == 6){
+					nuevo_lado = 9;
+				}
+
+				else if (seSale[0].lado == 7){
+					nuevo_lado = 4;
+				}
+
+				else if (seSale[0].lado == 8){
+					nuevo_lado = 1;
+				}
+				else if (seSale[0].lado == 9){
+					nuevo_lado = 6;
+				}
+
+				let nuevo_tActual = 1 - tActual;
+
+				t1 = angle(identificaciones[nuevo_lado].centro.x, identificaciones[nuevo_lado].centro.y,
+									 identificaciones[nuevo_lado].a.x, identificaciones[nuevo_lado].a.y);
+			  t2 = angle(identificaciones[nuevo_lado].centro.x, identificaciones[nuevo_lado].centro.y,
+									 identificaciones[nuevo_lado].b.x, identificaciones[nuevo_lado].b.y);
+
+				if (t1 - t2 > Math.PI){
+					t2 += 2 * Math.PI;
+				}
+
+				if (t2 - t1 > Math.PI){
+					t1 += 2 * Math.PI;
+				}
+
+				if (t1 > t2){
+					tmax = t1;
+					tmin = t2;
 				}
 
 				else {
-					xCoor = puntos.y.x;
-					yCoor = puntos.y.y;
+					tmax = t2;
+					tmin = t1;
+				}
+
+				nuevo_tActual = nuevo_tActual * (tmax - tmin) + tmin;
+
+				let puntoActualNuevo = angleInverse(identificaciones[nuevo_lado].centro.x, identificaciones[nuevo_lado].centro.y,
+																						nuevo_tActual, identificaciones[nuevo_lado].radio);
+
+				let diferencia = {x: puntoFlecha.x - puntoActual.x, y: puntoFlecha.y - puntoActual.y};
+				let complejoParaRotar;
+				let inversoParaRotar;
+
+				if (seSale[0].lado == 0 || seSale[0].lado == 3){
+					complejoParaRotar = exp(3 / 10 * Math.PI);
+					inversoParaRotar = exp(- 3 / 10 * Math.PI);
+				}
+
+				else if (seSale[0].lado == 1 || seSale[0].lado == 8){
+					complejoParaRotar = exp(- 1 / 10 * Math.PI);
+					inversoParaRotar = exp(1 / 10 * Math.PI);
+				}
+
+				else if (seSale[0].lado == 2 || seSale[0].lado == 5){
+					complejoParaRotar = exp(7 / 10 * Math.PI);
+					inversoParaRotar = exp(- 7 / 10 * Math.PI);
+				}
+
+				else if (seSale[0].lado == 4 || seSale[0].lado == 7){
+					complejoParaRotar = exp(11 / 10 * Math.PI);
+					inversoParaRotar = exp(- 11 / 10 * Math.PI);
+				}
+
+				else if (seSale[0].lado == 6 || seSale[0].lado == 9){
+					complejoParaRotar = exp(- 3 / 10 * Math.PI);
+					inversoParaRotar = exp(3 / 10 * Math.PI);
+				}
+
+				let norma_vector = Math.sqrt(diferencia.x * diferencia.x + diferencia.y * diferencia.y);
+				diferencia = new Complex(diferencia.x / norma_vector, diferencia.y / norma_vector);
+				let nueva_diferencia = prod(inversoParaRotar, diferencia);
+
+				let nuevo_vector = prod(complejoParaRotar, transformarVectorMöbius(nueva_diferencia, getPoint01(puntoActualNuevo, escala, centro), 1));
+				let otro_punto = curvaVectorTangentePunto(diferencia, getPoint01(puntoActualNuevo, escala, centro), .02);
+
+				otro_punto = {x: linealTransformation(otro_punto.re(), escala, centro.x), y:linealTransformation(otro_punto.im(), escala, centro.y)};
+
+
+				let rectaNueva = new Circunferencia(puntoActualNuevo.x, puntoActualNuevo.y, otro_punto.x, otro_punto.y,
+																						ctx, centro, escala, "#0174DF", 1);
+				rectaActual = new Circunferencia(rectaNueva.CPrima().x, rectaNueva.CPrima().y, rectaNueva.FPrima().x,
+																				 rectaNueva.FPrima().y, ctx, centro, escala, "#0174DF", 1);
+
+				puntoActual = puntoActualNuevo;
+
+				circunferenceActualFlechaAux = makeHyperbolicCircunference(puntoActual, tamanyo_flecha, centro, escala);
+				circunferenceActualFlechaAux.radio *= escala;
+
+				let vector_actual = {x:puntoActual.x - rectaActual.center().x,
+ 														 y:puntoActual.y - rectaActual.center().y};
+ 				let vector_perpendicular = {x: vector_actual.y, y: - vector_actual.x};
+
+ 				let puntosGrandes = interseccion_recta_con_circunferencia(vector_perpendicular, puntoActual,
+																 																	circunferenceActualFlechaAux.centro, circunferenceActualFlechaAux.radio);
+
+				let modX2 = (puntosGrandes.x.x - centro.x) * (puntosGrandes.x.x - centro.x) +
+										(puntosGrandes.x.y - centro.y) * (puntosGrandes.x.y - centro.y);
+				let modY2 = (puntosGrandes.y.x - centro.x) * (puntosGrandes.y.x - centro.x) +
+										(puntosGrandes.y.y - centro.y) * (puntosGrandes.y.y - centro.y);
+				let modMax;
+
+				if (modX2 > modY2){
+					modMax = modX2;
+				}
+
+				else {
+					modMax = modY2;
+				}
+
+				if (modMax == modX2){
+					xG = puntosGrandes.y.x;
+					yG = puntosGrandes.y.y;
+				}
+
+				else {
+					xG = puntosGrandes.x.x;
+					yG = puntosGrandes.x.y;
+				}
+
+				xCoor = puntoActual.x;
+				yCoor = puntoActual.y;
+
+				let tsentido1 = angle(rectaActual.center().x, rectaActual.center().y, xCoor,  yCoor);
+				let tsentido2 = angle(rectaActual.center().x, rectaActual.center().y, xG, yG);
+
+				if (tsentido1 - tsentido2 > Math.PI){
+					tsentido1 -= 2 * Math.PI;
+				}
+
+				if (tsentido2 - tsentido1 > Math.PI){
+					tsentido2 -= 2 * Math.PI;
+				}
+
+				if (tsentido2 > tsentido1){
+					sentido = 1;
+				}
+
+				else {
+					sentido = -1;
 				}
 			}
 
 			else {
-				var circunferenceAux = makeHyperbolicCircunference(puntoAnterior, paso, centro, escala);
-				circunferenceAux.radio *= escala;
+				if (rectaActual.isDiameter()){
+					let vector_actual = {x:rectaActual.B().x - rectaActual.A().x,
+															 y:rectaActual.B().y - rectaActual.A().y};
 
-				ctx.beginPath();
-	   	  ctx.arc(circunferenceAux.centro.x, circunferenceAux.centro.y, circunferenceAux.radio, 0, 2 * Math.PI, false);
-	   	  ctx.strokeStyle = 'Purple';
-	   	  ctx.stroke();
+					let puntos = interseccion_recta_con_circunferencia(vector_actual, rectaActual.A(),
+																																		circunferenceActual.centro, circunferenceActual.radio);
+					let puntosGrandes = interseccion_recta_con_circunferencia(vector_actual, rectaActual.A(),
+																																		circunferenceActualFlecha.centro, circunferenceActualFlecha.radio);
 
-				let puntos = interseccion_circunferencia_con_circunferencia(circunferenceAux.centro, circunferenceAux.radio,
-																																		rectaActual.center(), rectaActual.radius());
+					let t1 = (puntos.x.x - rectaActual.A().x) / vector_actual.x;
+					let t2 = (puntos.y.x - rectaActual.A().x) / vector_actual.x;
 
-				let t1 = angle(rectaActual.center().x, rectaActual.center().y, puntos.x.x, puntos.x.y);
-				let t2 = angle(rectaActual.center().x, rectaActual.center().y, puntos.y.x, puntos.y.y);
-				let tmax, tmin;
+					let tmax, tmin;
 
-				if (t1 - t2 > 3 / 2 * Math.PI){
-					t1 -= 2 * Math.PI;
-				}
+					if (t1 > t2){
+						tmax = t1;
+						tmin = t2;
+					}
 
-				if (t2 - t1 > 3 / 2 * Math.PI){
-					t2 -= 2 * Math.PI;
-				}
+					else {
+						tmax = t2;
+						tmin = t1;
+					}
 
-				if (t1 > t2){
-					tmax = t1;
-					tmin = t2;
+					if ((sentido == 1 && tmax == t1) || (sentido == -1 && tmax == t2)){
+						xCoor = puntos.x.x;
+						yCoor = puntos.x.y;
+						xG = puntosGrandes.x.x;
+						yG = puntosGrandes.x.y;
+					}
+
+					else {
+						xCoor = puntos.y.x;
+						yCoor = puntos.y.y;
+						xG = puntosGrandes.y.x;
+						yG = puntosGrandes.y.y;
+					}
 				}
 
 				else {
-					tmax = t2;
-					tmin = t1;
-				}
-				if ((sentido == 1 /*&& tmax == t1) || (sentido == -1 && tmax == t2*/)){
-					xCoor = puntos.x.x;
-					yCoor = puntos.x.y;
+					let vector_actual = {x:puntoActual.x - rectaActual.center().x,
+															 y:puntoActual.y - rectaActual.center().y};
+					let vector_perpendicular = {x: vector_actual.y, y: - vector_actual.x};
+
+					let puntos = interseccion_circunferencia_con_circunferencia(circunferenceActual.centro, circunferenceActual.radio,
+																																			rectaActual.center(), rectaActual.radius());
+					let puntosGrandes = interseccion_recta_con_circunferencia(vector_perpendicular, puntoActual,
+																																		circunferenceActualFlecha.centro, circunferenceActualFlecha.radio);
+					/*if (puntos.x == undefined && !reload){
+						window.alert("You lose, you got too close to the edge.");
+						reload = true;
+						window.location.reload(true);
+						return ;
+					}*/
+
+					let t1 = angle(rectaActual.center().x, rectaActual.center().y, puntos.x.x, puntos.x.y);
+					let t2 = angle(rectaActual.center().x, rectaActual.center().y, puntos.y.x, puntos.y.y);
+					let tmax, tmin;
+
+					if (t1 - t2 > Math.PI){
+						t1 -= 2 * Math.PI;
+					}
+
+					if (t2 - t1 > Math.PI){
+						t2 -= 2 * Math.PI;
+					}
+
+					if (t1 > t2){
+						tmax = t1;
+						tmin = t2;
+					}
+
+					else {
+						tmax = t2;
+						tmin = t1;
+					}
+
+					if ((sentido == 1 && tmax == t1) || (sentido == -1 && tmax == t2)){
+						xCoor = puntos.x.x;
+						yCoor = puntos.x.y;
+						xG = puntosGrandes.x.x;
+						yG = puntosGrandes.x.y;
+					}
+
+					else {
+						xCoor = puntos.y.x;
+						yCoor = puntos.y.y;
+						xG = puntosGrandes.y.x;
+						yG = puntosGrandes.y.y;
+					}
 				}
 
-				else {
-					xCoor = puntos.y.x;
-					yCoor = puntos.y.y;
-				}
 			}
 
-			puntoAnterior = puntoActual;
+      puntoActual = {x: xCoor, y: yCoor};
 
-      // Create the new Snake's head
-      const head = {x: xCoor, y: yCoor};
-			puntoActual = head;
+			puntoFlecha = {x:xG, y: yG};
 
-			if (cambio){
-				puntoAnterior = puntoActual;
-				cambio = false;
-			}
+			ctx.beginPath();
+			canvas_arrow(ctx, puntoActual.x, puntoActual.y, xG, yG);
+			ctx.strokeStyle = 'Purple';
+			ctx.stroke();
 
-			//console.log(sentido);
-
-      // Add the new head to the beginning of snake body
-      snake.unshift(head);
-      snake.pop();
+			puntoActualPoincare = {x: linealTransformationInverse(puntoActual.x, escala, centro.x),
+														 y: linealTransformationInverse(puntoActual.y, escala, centro.y)};
+			rectaActual.perpendicular(puntoActualPoincare).drawHyperbolicLine();
     }
 
 		function change_direction(event) {
       const LEFT_KEY = 37;
       const RIGHT_KEY = 39;
 
-      if (changing_direction)
-				return;
-      changing_direction = true;
-
       const keyPressed = event.keyCode;
 
       if (keyPressed === LEFT_KEY) {
         rectaActual = rectaActual.perpendicular(puntoActualPoincare);
-				sentido = 1;
+				cambioSentido(false);
 				cambio = true;
       }
 
       if (keyPressed === RIGHT_KEY) {
         rectaActual = rectaActual.perpendicular(puntoActualPoincare);
-				sentido = -1;
+				cambioSentido(true);
 				cambio = true;
       }
+		}
+
+		function cambioSentido(derecha){
+			if (!rectaActual.isDiameter()){
+				let puntos = interseccion_circunferencia_con_circunferencia(circunferenceActualFlecha.centro, circunferenceActualFlecha.radio,
+																																		rectaActual.center(), rectaActual.radius());
+
+				let punto_nuevo;
+
+				if (derecha) {
+					punto_nuevo = rotatePoint(puntoFlecha.x, puntoFlecha.y, Math.PI / 2, puntoActual);
+				}
+
+				else {
+					punto_nuevo = rotatePoint(puntoFlecha.x, puntoFlecha.y, - Math.PI / 2, puntoActual);
+				}
+
+				let modX2 = (puntos.x.x - punto_nuevo.x) * (puntos.x.x - punto_nuevo.x) + (puntos.x.y - punto_nuevo.y) * (puntos.x.y - punto_nuevo.y);
+				let modY2 = (puntos.y.x - punto_nuevo.x) * (puntos.y.x - punto_nuevo.x) + (puntos.y.y - punto_nuevo.y) * (puntos.y.y - punto_nuevo.y);
+				let modMax;
+
+				if (modX2 > modY2){
+					modMax = modX2;
+				}
+
+				else {
+					modMax = modY2;
+				}
+
+				let t1 = angle(rectaActual.center().x, rectaActual.center().y, puntoActual.x, puntoActual.y);
+				let t2;
+
+				if (modMax == modX2){
+					t2 = angle(rectaActual.center().x, rectaActual.center().y, puntos.x.x, puntos.x.y);
+				}
+
+				else{
+					t2 = angle(rectaActual.center().x, rectaActual.center().y, puntos.y.x, puntos.y.y);
+				}
+
+				if (t2 > t1){
+					sentido = -1;
+				}
+
+				else {
+					sentido = 1;
+				}
+			}
+
+			else {
+				let vector_actual = {x: puntoActual.x - puntoFlecha.x, y: puntoActual.y - puntoFlecha.y};
+				let vector_perpendicular = {x: vector_actual.y, y: - vector_actual.x};
+
+				let puntos = interseccion_recta_con_circunferencia(vector_actual, rectaActual.A(),
+																																	circunferenceActualFlecha.centro, circunferenceActualFlecha.radio);
+
+				let punto_nuevo;
+
+				if (derecha) {
+					punto_nuevo = rotatePoint(puntoFlecha.x, puntoFlecha.y, Math.PI / 2, puntoActual);
+				}
+
+				else {
+					punto_nuevo = rotatePoint(puntoFlecha.x, puntoFlecha.y, - Math.PI / 2, puntoActual);
+				}
+
+				let modX2 = (puntos.x.x - punto_nuevo.x) * (puntos.x.x - punto_nuevo.x) + (puntos.x.y - punto_nuevo.y) * (puntos.x.y - punto_nuevo.y);
+				let modY2 = (puntos.y.x - punto_nuevo.x) * (puntos.y.x - punto_nuevo.x) + (puntos.y.y - punto_nuevo.y) * (puntos.y.y - punto_nuevo.y);
+				let modMax;
+
+				if (modX2 > modY2){
+					modMax = modX2;
+				}
+
+				else {
+					modMax = modY2;
+				}
+
+				let t1 = (puntoActual.x - rectaActual.A().x) / vector_actual.x;
+				let t2;
+
+				if (modMax == modX2){
+					t2 = (puntos.x.x - rectaActual.A().x) / vector_actual.x;
+				}
+
+				else{
+					t2 = (puntos.y.x - rectaActual.A().x) / vector_actual.x;
+				}
+
+				if (t2 > t1){
+					sentido = -1;
+				}
+
+				else {
+					sentido = 1;
+				}
+			}
+		}
+
+		function transformarVectorMöbius(vector_original, punto_partida, radio) {
+			let puntoComp = new Complex (punto_partida.x, punto_partida.y);
+			let uno = new Complex(1, 0);
+
+			let denominadorz0 = new Complex (1 + radio * radio, 0);
+			let radioComp = new Complex (radio, 0);
+			let numeradorz0_1 = prod(radioComp, exp(4 / 5 * Math.PI));
+			let numeradorz0_2 = prod(radioComp, exp(2 / 5 * Math.PI));
+			let z0 = div(sub(numeradorz0_1, numeradorz0_2), denominadorz0);
+
+			let numeradorw_2 = new Complex (1 - abs(z0) * abs(z0), 0);
+			let numeradorw = prod(vector_original, numeradorw_2);
+			let denominadorw = prod(add(uno, prod(conjg(z0), puntoComp)), add(uno, prod(conjg(z0), puntoComp)));
+
+			let w = div(numeradorw, denominadorw);
+
+			return w;
+		}
+
+		function curvaVectorTangentePunto(vector_tangente, punto, s) {
+			let puntoComp = new Complex (punto.x, punto.y);
+			let uno = new Complex(1, 0);
+			let sComp = new Complex(s, 0);
+
+			let numerador = add(puntoComp, prod(sComp, vector_tangente));
+			let denominador = add(uno, prod(conjg(puntoComp), prod(sComp, vector_tangente)));
+
+			let punto_curva_s = div(numerador, denominador);
+
+			return punto_curva_s;
+		}
+
+		function canvas_arrow(context, fromx, fromy, tox, toy) {
+		  var headlen = tamanyo_cabeza_flecha; // length of head in pixels
+		  var dx = tox - fromx;
+		  var dy = toy - fromy;
+		  var angle = Math.atan2(dy, dx);
+
+			let modulo = Math.sqrt((fromx - tox) * (fromx - tox) + (fromy - toy) * (fromy - toy));
+
+		  context.moveTo(fromx, fromy);
+		  context.lineTo(tox, toy);
+		  context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6) * modulo,
+										 toy - headlen * Math.sin(angle - Math.PI / 6) * modulo);
+		  context.moveTo(tox, toy);
+		  context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6) * modulo,
+										 toy - headlen * Math.sin(angle + Math.PI / 6) * modulo);
 		}
 
 
@@ -416,6 +789,14 @@
      return theta;
    }
 
+	 function angleInverse(cx, cy, theta, radio) {
+      var x = radio * Math.cos(theta) + cx;
+      var y = radio * Math.sin(theta) + cy;
+			var punto = {x: x, y: y};
+
+      return punto;
+    }
+
 	//**********************************************************************
 
 	// x e y: son las coordenadas del punto a rotar
@@ -481,8 +862,8 @@
 	// LLeva un punto del disco de Poincaré al modelo de Weierstrass
 	function applyG(x, y){
 		return  [[(2 * x) / (1 - x * x - y * y)],
-			 [(2 * y) / (1 - x * x - y * y)],
-			 [(1 + x * x + y * y) / (1 - x * x - y * y)]];
+						 [(2 * y) / (1 - x * x - y * y)],
+						 [(1 + x * x + y * y) / (1 - x * x - y * y)]];
 	}
 
 	// LLeva un punto del modelo de Weierstrass al disco de Poincaré
@@ -496,6 +877,7 @@
 	function DrawPgonPattern(transformation){
 
 		var
+		//SumSquare,
 		Tvertex, oldTvertex, Tcenter;
 
 		/// Centro del polígono
@@ -508,73 +890,48 @@
 		Tcenter[0][0] = linealTransformation(Tcenter[0][0], escala, centro.x);
 		Tcenter[1][0] = linealTransformation(Tcenter[1][0], escala, centro.y);
 
-		if (border == 0 || border == 2){
-			for (let i = 0; i < X.length; i++){
+		for (let i = 0; i < X.length; i++){
+				/// Vertices del polígono
+				let weierstrassCoordinates = applyG(X[i], Y[i]);
+				let Z = matrixproduct(transformation, weierstrassCoordinates);
 
-					/// Vertices del polígono
-					let weierstrassCoordinates = applyG(X[i], Y[i]);
-					let Z = matrixproduct(transformation, weierstrassCoordinates);
-
-					Tvertex = applyF(Z[0][0], Z[1][0], Z[2][0]);
-
-					Tvertex[0][0] = linealTransformation(Tvertex[0][0], escala, centro.x);
-					Tvertex[1][0] = linealTransformation(Tvertex[1][0], escala, centro.y);
-
-					if (i != 0){
-						/// Lados del polígono
-						var lineaHiperbolica = new Circunferencia(oldTvertex[0][0], oldTvertex[1][0], Tvertex[0][0], Tvertex[1][0], ctx,
-							centro, escala, "Red", 1);
-						lineaHiperbolica.drawHyperbolicLine();
-
-						/// Radios del polígono
-						var lineaHiperbolicaCenter = new Circunferencia(Tcenter[0][0], Tcenter[1][0], Tvertex[0][0], Tvertex[1][0], ctx, centro,
-							escala, "Grey", 1);
-						lineaHiperbolicaCenter.drawHyperbolicLine();
-
-						/*console.log(oldTx);
-						console.log(oldTy);
-						console.log(Tx);
-						console.log(Ty);*/
-					}
-
-					oldTvertex = Tvertex;
-			}
-		}
-
-		if (border == 1 || border == 2){
-			for (let i = 0; i < X1.length; i++){
-				if (i == 0)
-					ctx.beginPath();
-				let weierstrassCoordinates = applyG(X1[i], Y1[i]);
-				let Z1 = matrixproduct(transformation, weierstrassCoordinates);
-
-				Tvertex = applyF(Z1[0][0], Z1[1][0], Z1[2][0]);
+				Tvertex = applyF(Z[0][0], Z[1][0], Z[2][0]);
 
 				Tvertex[0][0] = linealTransformation(Tvertex[0][0], escala, centro.x);
 				Tvertex[1][0] = linealTransformation(Tvertex[1][0], escala, centro.y);
 
-				switch(Action[i]){
-					case "Move":
-						ctx.moveTo(Tvertex[0][0], Tvertex[1][0]);
-						//console.log(`ctx.moveTo(${Tvertex[0][0]},${Tvertex[1][0]})`)
-						break;
+				if (i != 0){
+					let color = "Red";
 
-					case "Draw":
-						ctx.lineTo(Tvertex[0][0], Tvertex[1][0]);
-						//console.log(`ctx.lineTo(${Tvertex[0][0]},${Tvertex[1][0]})`)
-						break;
+					if (i == 1 || i == 4){
+						color = "Yellow";
+					}
 
-					default:
-						ctx.strokeStyle = Action[i];		//Pinta los bordes del polígono
-						ctx.stroke();
-						if (i != X1.length)
-							ctx.beginPath();
-						//console.log(`Black == ctx.stroke() ; ctx.beginPath()`)
-						break;
+					else if (i == 2 || i == 9){
+						color = "Green";
+					}
+
+					else if (i == 3 || i == 6){
+						color = "#6A0888";
+					}
+
+					else if (i == 5 || i == 8){
+						color = "Orange";
+					}
+
+					/// Lados del polígono
+					var lineaHiperbolica = new Circunferencia(oldTvertex[0][0], oldTvertex[1][0], Tvertex[0][0], Tvertex[1][0], ctx,
+						centro, escala, color, 2);
+					lineaHiperbolica.drawHyperbolicLine();
+
+					/// Radios del polígono
+					var lineaHiperbolicaCenter = new Circunferencia(Tcenter[0][0], Tcenter[1][0], Tvertex[0][0], Tvertex[1][0], ctx, centro,
+						escala, "Grey", 1);
+					lineaHiperbolicaCenter.drawHyperbolicLine();
 				}
-			}
-		}
 
+				oldTvertex = Tvertex;
+		}
 	}
 
 	//*******************************************************************************************
@@ -583,7 +940,6 @@
 		let
 		RotateCenter,
 		RotateVertex,
-		//Tr,										/// Esta variable está definida en el artículo de 1981
 		i, j,
 		ExposedEdges,
 		PgonsPerVertex;
@@ -598,36 +954,30 @@
 				ExposedEdges = p - 3;
 				var Rotate3P = matrixproduct(Rotate2P, RotateP);
 
-				RotateCenter = matrixproduct(InitialTransformation,	Rotate3P);	//// Esto está en el artículo de 1986
+				RotateCenter = matrixproduct(InitialTransformation,	Rotate3P);
 			}
 
 			else if (Adyacency == "Vertex"){
 				ExposedEdges = p - 2;
 
-				RotateCenter = matrixproduct(InitialTransformation, Rotate2P);		//// Esto está en el artículo de 1986
+				RotateCenter = matrixproduct(InitialTransformation, Rotate2P);
 			}
 
 			else {
 				throw RangeError(`Adyacency has an incorrect value`);
 			}
 
-			/*RotateCenter = matrixproduct(						///RotateP * RotateP * InitialTransformation
-				matrixproduct(RotateP, RotateP),				/// Esto está en el artículo de 1981
-				InitialTransformation);*/
-
 			for (i = 0; i < ExposedEdges; i++){
-				RotateVertex = matrixproduct(RotateCenter, RotateQ);			/// Esto está en el artículo de 1986
+				RotateVertex = matrixproduct(RotateCenter, RotateQ);
 
-				ReplicatePattern(RotateVertex,
-												Layerdiff - 1,
-												"Edge");			/// Esto está en el artículo de 1986
+				ReplicatePattern(RotateVertex, Layerdiff - 1, "Edge");
+
 
 				if (i < ExposedEdges - 1)					//// El -1 es para compensar que la i empieza en 0
 					PgonsPerVertex = q - 3;
 
 				else if (i == ExposedEdges - 1)					//// El -1 es para compensar que la i empieza en 0
 					PgonsPerVertex = q - 4;
-
 
 			for(j = 0; j < PgonsPerVertex; j++){
 				RotateVertex = matrixproduct(RotateVertex, RotateQ);
@@ -636,7 +986,7 @@
 					"Vertex");
 			}
 
-			RotateCenter = matrixproduct(RotateCenter, RotateP);		/// Este for, junto con esta línea, están en el artículo de 1986
+			RotateCenter = matrixproduct(RotateCenter, RotateP);
 
 			}
 		}
@@ -655,56 +1005,22 @@
  	 ctx.beginPath();
  	 ctx.arc(centro.x, centro.y, escala, 0, 2 * Math.PI, false);
  	 ctx.strokeStyle = 'Blue';
+	 ctx.lineWidth = 2;
  	 ctx.stroke();
 
-		//console.log(`X.length == ${X1.length}, p == ${p}`);
+	 DrawPgonPattern(Identity);
 
-		//console.log(`main(): p == ${p}`);
-
-		if (border == 1 || border == 2){
-			// Le añado un (0,0) a los puntos puesto que cuando llegue a este punto se eligirá el color
-			X1.push(0);
-			Y1.push(0);
-			Action.push("Purple");  // CUA: mejor adoptar política siempre tres 'Push' paralelos
-
-			const long_X_orig = X1.length;
-
-			if ( X1.length != Y1.length || X1.length != Action.length )
-				throw RangeError(`las longitudes de X/Y/Action no coinciden, están mal definidas`)
-
-
-		 /// Añado las rotaciones a los vectores X e Y (y Action)
-		 for (let i = 1; i < p; i++){   // cambiar 'var' por 'let'
-			 for (let j = 0; j < long_X_orig; j++){     // CUA usar 'X.length' en lugar de exactamente '6'
-				 let puntoRotado = {x:0, y:0};
-
-				 if (j != long_X_orig - 1)				// Cuando sea Negro, se añade el punto (0,0)
-				 		puntoRotado = rotatePoint(X1[j], Y1[j], 2 * Math.PI / p * i, centro0);  // const en lugar de 'var'
-
-				 X1.push(puntoRotado.x);
-				 Y1.push(puntoRotado.y);
-				 Action.push(Action[j]) ; //  CUA: mejor adoptar política siempre tres 'Push' paralelos
-			 }
-		 }
-	 }
-
-		 DrawPgonPattern(Identity);
-
-
-
-			if (nLayers > 0){					/// Para poder dibujar solo la primera capa (la capa 0)
-	
-
+		if (nLayers > 0){					/// Para poder dibujar solo la primera capa (la capa 0)
 			RotateCenter = Identity;
 
 			for (let i = 0; i < p; i++){
 				RotateVertex = matrixproduct(RotateCenter, RotateQ);
 
-				ReplicatePattern(RotateVertex, nLayers - 1, "Edge");			// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
+				ReplicatePattern(RotateVertex, nLayers - 1, "Edge");					// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
 
 				for (let j = 0; j < q - 3; j++){
 					RotateVertex = matrixproduct(RotateVertex, RotateQ);
-					ReplicatePattern(RotateVertex, nLayers - 1, "Vertex");		// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
+					ReplicatePattern(RotateVertex, nLayers - 1, "Vertex");			// En el artículo de 1986 pone nLayers - 2, me parece más lógico con -1
 				}
 
 				RotateCenter = matrixproduct(RotateCenter, RotateP);
